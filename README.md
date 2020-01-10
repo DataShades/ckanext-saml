@@ -40,8 +40,8 @@ The main sections that should be updated within the file are ``sp`` and ``idp``
 
 In order to make it more clear lets start from configuring ``idp``:
 1. Modify ``entityId`` by filling it with the ``entityID`` that should be present in the ``idp_metadata.xml`` file (name of the file can be different) that is been sent to you by the IdP.
-2. Modify ``url`` in  ``singleSignOnService``. You can find this ``url`` in ``idp_metadata.xml``at ``SingleSignOnService`` section, it should have ``Location`` attribute where the url is specified.
-3. Modify ``x509cert`` by filling it with the`` X509Certificate`` that should be present in ``idp_metadata.xml``. Make sure the this set as a **oneline string**.
+2. Modify ``url`` in  ``singleSignOnService``. You can find this ``url`` in ``idp_metadata.xml`` at ``SingleSignOnService`` section, it should have ``Location`` attribute where the url is specified.
+3. Modify ``x509cert`` by filling it with the`` X509Certificate`` that should be present in ``idp_metadata.xml``. Make sure the this set as a **single line string**.
 
 **Note**:  ``singleLogoutService`` is not implemented.
 
