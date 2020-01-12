@@ -1,4 +1,5 @@
 from flask import Blueprint, make_response, session
+import logging
 import ckan.lib.base as base
 from ckan.common import request, g, config
 import ckan.lib.helpers as h
@@ -14,6 +15,7 @@ from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
+log = logging.getLogger(__name__)
 custom_folder =  saml_helpers.get_saml_folter_path()
 attr_mapper = saml_helpers.get_attr_mapper()
 
@@ -24,7 +26,7 @@ saml_details = [
 	'samlCKANuser'
 ]
 
-saml = Blueprint(u'saml', __name__, url_prefix=u'/saml',)
+saml = Blueprint('saml', __name__, url_prefix='/saml',)
 
 
 def prepare_from_flask_request():
@@ -40,46 +42,75 @@ def prepare_from_flask_request():
 @saml.route('/', methods=['GET', 'POST'])
 def index():
 	if request.method == 'POST':
+		log.info('Got responsne from the IdP. Start analyzing it.')
 		req = prepare_from_flask_request()
 		auth = OneLogin_Saml2_Auth(req, custom_base_path=custom_folder)
 		request_id = None
-
 		auth.process_response(request_id=request_id)
 		errors = auth.get_errors()
 		if len(errors) == 0:
+			log.info('User succesfully logged in the IdP. Extracting NAMEID.')
+			
 			nameid = auth.get_nameid()
 
 			if not nameid:
+				log.error(
+					(
+						'Something went wrong, no NAMEID was found, '
+						'redirecting back to to login page.'
+					)
+				)
 				return h.redirect_to('user.login')
 			else:
+				log.info('NAMEID: {0}'.format(nameid))
+				
 				saml_user = model.Session.query(SAML2User)\
 					.filter(SAML2User.name_id == nameid).first()
 
 				if not saml_user:
+					log.info(
+						(
+							'No User with NAMEID \'{0}\' was found. '
+							'Creating one.'.format(nameid)
+						)
+					)
 					mapped_data = {}
+
+					log.info('Extracting data from IdP response.')
 					for key, value in attr_mapper.items():
 						field = auth.get_attribute(value)
 						if field:
 							mapped_data[key] = field
 
 					user_dict = {
-						'name': _get_random_username_from_email(mapped_data['email'][0]),
+						'name': _get_random_username_from_email(
+							mapped_data['email'][0]),
 						'email': mapped_data['email'][0],
 						'id': str(uuid.uuid4()),
 						'password': str(uuid.uuid4()),
 					}
-					try:	
+					try:
+						log.info(
+							('Trying to create User with name \'{0}\''.format(
+							user_dict['name']
+							))
+						)
 						user = logic.get_action('user_create')(
 							{'ignore_auth': True}, user_dict)
 						if user:
-							model.Session.add(SAML2User(id=user['id'],
-														name_id=nameid))
+							model.Session.add(SAML2User(
+								id=user['id'],
+								name_id=nameid)
+							)
 							model.Session.commit()
+							log.info(
+								'User succesfully created. Authorizing...')
 					except Exception as e:
 						print(e)
 						return h.redirect_to('user.login')
 				else:
 					user = model.User.get(saml_user.id)
+					log.info('User already created. Authorizing...')
 			
 			session['samlUserdata'] = auth.get_attributes()
 			session['samlNameIdFormat'] = auth.get_nameid_format()
@@ -87,8 +118,12 @@ def index():
 			session['samlCKANuser'] = user.name
 			
 			g.user = user.name
+			
 			return h.redirect_to('dashboard.index')
-		# return 'OK'
+		else:
+			h.flash_error('SAML: Errors appeared while logging process.')
+			log.error('{}'.format(errors))
+	
 	return h.redirect_to('/saml/login')
 
 def metadata():
@@ -108,17 +143,29 @@ def metadata():
 
 def saml_login():
 	req = prepare_from_flask_request()
-	auth = OneLogin_Saml2_Auth(req, custom_base_path=custom_folder)
-	
-	if 'sso' in request.args and request.args['sso'] == 'true':
-		return h.redirect_to(auth.login())
+	try:
+		auth = OneLogin_Saml2_Auth(req, custom_base_path=custom_folder)
+		if 'sso' in request.args and request.args['sso'] == 'true':
+			log.info('Redirect to SAML IdP.')
+			return h.redirect_to(auth.login())
+		else:
+			log.warning(
+				(
+					'No arguments been provided in this URL. If you want to make '
+					'auth request to SAML IdP point, please provide \'?sso=true\' at '
+					'the end of the URL.'
+				)
+			)
+	except Exception as e:
+		h.flash_error('SAML: An issue appeared while validating settings file.')
+		log.error('{}'.format(e))
 
 	return h.redirect_to('user.login')
 
 
 util_rules = [
-	(u'metadata', metadata),
-	(u'login', saml_login),
+	('metadata', metadata),
+	('login', saml_login),
 ]
 
 for rule, view_func in util_rules:
