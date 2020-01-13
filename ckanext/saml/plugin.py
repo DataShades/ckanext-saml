@@ -10,41 +10,41 @@ from ckanext.saml.helpers import get_helpers
 
 
 class SamlPlugin(plugins.SingletonPlugin):
-	plugins.implements(plugins.IConfigurer)
-	plugins.implements(plugins.IAuthenticator, inherit=True)
-	plugins.implements(plugins.IBlueprint)
-	plugins.implements(plugins.IClick)
-	plugins.implements(plugins.ITemplateHelpers)
+    plugins.implements(plugins.IConfigurer)
+    plugins.implements(plugins.IAuthenticator, inherit=True)
+    plugins.implements(plugins.IBlueprint)
+    plugins.implements(plugins.IClick)
+    plugins.implements(plugins.ITemplateHelpers)
 
-	# IConfigurer
+    # IConfigurer
 
-	def update_config(self, config_):
-		toolkit.add_template_directory(config_, 'templates')
-		toolkit.add_public_directory(config_, 'public')
-		toolkit.add_resource('fanstatic',
-			'saml')
+    def update_config(self, config_):
+        toolkit.add_template_directory(config_, 'templates')
+        toolkit.add_public_directory(config_, 'public')
+        toolkit.add_resource('fanstatic',
+            'saml')
 
-	# ITemplateHelpers
+    # ITemplateHelpers
 
-	def get_helpers(self):
-		return get_helpers()
+    def get_helpers(self):
+        return get_helpers()
 
-	# IAuthenticator
+    # IAuthenticator
 
-	def identify(self):
-		if 'samlCKANuser' in session:
-			g.user = session['samlCKANuser']
-			return
+    def identify(self):
+        if 'samlCKANuser' in session:
+            g.user = session['samlCKANuser']
+            return
 
-	def logout(self):
-		if 'samlNameId' in session:
-			for key in saml.saml_details:
-				del session[key]
+    def logout(self):
+        if 'samlNameId' in session:
+            for key in saml.saml_details:
+                del session[key]
 
-	# IBlueprint
-	def get_blueprint(self):
-		return saml.saml
+    # IBlueprint
+    def get_blueprint(self):
+        return saml.saml
 
-	# IClick
-	def get_commands(self):
-		return get_commnads()
+    # IClick
+    def get_commands(self):
+        return get_commnads()
