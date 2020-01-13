@@ -101,7 +101,7 @@ def index():
                             {'ignore_auth': True}, user_dict)
                         if new_user:
                             model.Session.add(SAML2User(
-                                id=user['id'],
+                                id=new_user['id'],
                                 name_id=nameid)
                             )
                             model.Session.commit()
