@@ -18,7 +18,9 @@ To install ``ckanext-saml``:
 4.  Install requirements:
 		pip install -r requirements.txt
 5. Add ``saml`` to the ``ckan.plugins`` setting in your CKAN config file (by default the config file is located at  ``/etc/ckan/default/production.ini``).
-6. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu:
+6. Initialize new table:
+		ckan -c CONFIG_PATH saml init-db
+7. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu:
 		sudo service apache2 reload
 
 If error that mentioned below appears on CentOS, you might need to install additional packages - ``yum install xmlsec1-nss-devel xmlsec1-openssl-devel xmlsec1-gnutls-devel``:
@@ -27,6 +29,8 @@ If error that mentioned below appears on CentOS, you might need to install addit
 		SystemError: null argument to internal routine
 
 #### Config settings ####
+``ckan.saml_use_https`` -  Used to send data while **https**, set ``on`` to enable it. By **default** is set to ``off`` and uses **http**.
+
 ``ckan.saml_login_button_text`` - Provides an ability to customize login button text. By **default** set to ``SAML Login``.
 
 ``ckan.saml_custom_base_path`` - Provides custom path where saml files/folders will be searched. By **default**  set to ``/etc/ckan/default/saml``.

@@ -18,6 +18,7 @@ from onelogin.saml2.utils import OneLogin_Saml2_Utils
 log = logging.getLogger(__name__)
 custom_folder =  saml_helpers.get_saml_folter_path()
 attr_mapper = saml_helpers.get_attr_mapper()
+use_https = config.get('ckan.saml_use_https', 'off')
 
 saml_details = [
     'samlUserdata',
@@ -32,6 +33,7 @@ saml = Blueprint('saml', __name__, url_prefix='/saml',)
 def prepare_from_flask_request():
     url_data = urlparse(request.url)
     return {
+        'https': use_https,
         'http_host': request.host,
         'server_port': url_data.port,
         'script_name': request.path,
@@ -95,9 +97,9 @@ def index():
                             user_dict['name']
                             ))
                         )
-                        user = logic.get_action('user_create')(
+                        new_user = logic.get_action('user_create')(
                             {'ignore_auth': True}, user_dict)
-                        if user:
+                        if new_user:
                             model.Session.add(SAML2User(
                                 id=user['id'],
                                 name_id=nameid)
@@ -105,6 +107,7 @@ def index():
                             model.Session.commit()
                             log.info(
                                 'User succesfully created. Authorizing...')
+                        user = model.User.get(new_user['name'])
                     except Exception as e:
                         print(e)
                         return h.redirect_to('user.login')
