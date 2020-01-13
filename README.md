@@ -13,11 +13,18 @@ To install ``ckanext-saml``:
 1. Download or clone the [repository](https://github.com/datashades/ckanext-saml) into your CKAN installation.
 2. Go to extension directory and run command:
 		python setup.py develop
-3.  Install requirements:
+3. Install additional packages (example is shown for CentOS):
+		yum install python3-devel xmlsec1-devel libtool-ltdl-devel
+4.  Install requirements:
 		pip install -r requirements.txt
-4. Add ``saml`` to the ``ckan.plugins`` setting in your CKAN config file (by default the config file is located at  ``/etc/ckan/default/production.ini``).
-5. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu:
+5. Add ``saml`` to the ``ckan.plugins`` setting in your CKAN config file (by default the config file is located at  ``/etc/ckan/default/production.ini``).
+6. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu:
 		sudo service apache2 reload
+
+If error that mentioned below appears on CentOS, you might need to install additional packages - ``yum install xmlsec1-nss-devel xmlsec1-openssl-devel xmlsec1-gnutls-devel``:
+
+		import xmlsec
+		SystemError: null argument to internal routine
 
 #### Config settings ####
 ``ckan.saml_login_button_text`` - Provides an ability to customize login button text. By **default** set to ``SAML Login``.
