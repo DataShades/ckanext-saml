@@ -52,4 +52,15 @@ Modifications for ``sp``:
 **Note**:  ``singleLogoutService`` is not implemented.
 
 ``advanced_settings.json`` is used for additional configurations such as security.  It also needed to modify the ``contactPerson`` and ``organization`` sections in it if your are going to provide your SP data to your IdP.
-After compliting configuration in ``settings.json``, at ``DOMAIN_NAME/saml/metadata URL`` you can find the ``sp.xml`` generated, which you can provide to the IdP for configuration on their side. The main infomation that is needed for the IdP is the ``AssertionConsumerService``(ACS) which is should be set on their APP for SAML. ``AssertionConsumerService`` should match to what you have in your settings.json and IdP APP, otherwise errors might appear.
+After compliting configuration in ``settings.json``, at ``DOMAIN_NAME/saml/metadata URL`` you can find the ``sp.xml`` generated, which you can provide to the IdP for configuration on their side.
+
+The main infomation that is needed for the IdP is the ``AssertionConsumerService``(ACS) which is should be set on their APP for SAML. ``AssertionConsumerService`` should match to what you have in your settings.json and IdP APP, otherwise errors might appear.
+
+#### SP Metadata file ####
+As mentioned above, you can find SP metadata at ``DOMAIN_NAME/saml/metadata URL`` after configuring ``advanced_settings.json``.
+This **URL** is accessible only to ``sysadmins`` and presented in **XML** format.
+Additional tab on ``/ckan-admin/`` is added, that leads to this page.
+
+#### Data encryption ####
+In order to encrypt the coming data from the IdP use ``advanced_settings.json`` file. In ``security`` section, you can enable encryption for NAMEID and all other data that will be returned to the SP.
+If you enable one of ``authnRequestsSigned``,``logoutRequestSigned``,``logoutResponseSigned``,``wantAssertionsEncrypted``, ``wantNameIdEncrypted`` (you can find description of earch option [here](https://github.com/onelogin/python3-saml#how-it-works)), you will have to create [x509 certificate](https://en.wikipedia.org/wiki/X.509) in you SP. Cerificate should be created in ``certs`` folder, files should be named as ``sp.crt`` and ``sp.key`` (private key). After creating it, your ``sp.xml`` will show you public key ``ds:X509Certificate`` that should be delivered to your IdP in order to configure encryption.

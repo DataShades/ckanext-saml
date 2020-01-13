@@ -1,7 +1,7 @@
 from flask import Blueprint, make_response, session
 import logging
 import ckan.lib.base as base
-from ckan.common import request, g, config
+from ckan.common import request, g, config, _
 import ckan.lib.helpers as h
 import ckan.logic as logic
 from ckan.logic.action.create import _get_random_username_from_email
@@ -127,6 +127,12 @@ def index():
 	return h.redirect_to('/saml/login')
 
 def metadata():
+	try:
+		context = dict(model=model, user=g.user, auth_user_obj=g.userobj)
+		logic.check_access(u'sysadmin', context)
+	except logic.NotAuthorized:
+		base.abort(403, _(u'Need to be system administrator to administer'))
+
 	req = prepare_from_flask_request()
 	auth = OneLogin_Saml2_Auth(req, custom_base_path=custom_folder)
 	
