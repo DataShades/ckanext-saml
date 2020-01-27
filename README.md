@@ -37,6 +37,8 @@ If error that mentioned below appears on CentOS, you might need to install addit
 
 ``ckan.saml_custom_attr_map`` -  Used to modify mapper filename. By **default** searches for ``mapper.py``.
 
+``ckan.saml_use_root_path`` - This needs to be set to ``true`` if you run your portal using the ``ckan.root_path``. By **default** set to ``false``.
+
 #### Configuration ####
 Before start configuring, make sure that the config setting ``ckan.saml_custom_base_path`` is set if your config file is not stored at ``/etc/ckan/default`` directory.
 

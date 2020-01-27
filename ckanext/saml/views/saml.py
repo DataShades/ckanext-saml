@@ -1,7 +1,11 @@
-from flask import Blueprint, make_response, session
+import re
 import logging
+import uuid
+from flask import Blueprint, make_response, session
+from urllib.parse import urlparse
+
 import ckan.lib.base as base
-from ckan.common import request, g, config, _
+from ckan.common import request, g, config, _, asbool
 import ckan.lib.helpers as h
 import ckan.logic as logic
 from ckan.logic.action.create import _get_random_username_from_email
@@ -9,8 +13,6 @@ import ckan.model as model
 from ckanext.saml.model.saml2_user import SAML2User
 import ckanext.saml.helpers as saml_helpers
 
-import uuid
-from urllib.parse import urlparse
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
@@ -32,11 +34,20 @@ saml = Blueprint('saml', __name__, url_prefix='/saml',)
 
 def prepare_from_flask_request():
     url_data = urlparse(request.url)
+
+    req_path = request.path
+    if asbool(config.get('ckan.saml_use_root_path', False)):
+        # FIX FOR ROOT_PATH REMOVED IN request.path
+        root_path = config.get('ckan.root_path', None)
+        if root_path:
+            root_path = re.sub('/{{LANG}}', '', root_path)
+            req_path = root_path + req_path 
+
     return {
         'https': use_https,
         'http_host': request.host,
         'server_port': url_data.port,
-        'script_name': request.path,
+        'script_name': req_path,
         'get_data': request.args.copy(),
         'post_data': request.form.copy()
     }
