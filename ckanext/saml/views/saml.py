@@ -62,7 +62,7 @@ def index():
                         'redirecting back to to login page.'
                     )
                 )
-                return h.redirect_to('user.login')
+                return h.redirect_to(h.url_for('user.login'))
             else:
                 log.info('NAMEID: {0}'.format(nameid))
                 
@@ -110,7 +110,7 @@ def index():
                         user = model.User.get(new_user['name'])
                     except Exception as e:
                         print(e)
-                        return h.redirect_to('user.login')
+                        return h.redirect_to(h.url_for('user.login'))
                 else:
                     user = model.User.get(saml_user.id)
                     log.info('User already created. Authorizing...')
@@ -122,12 +122,12 @@ def index():
             
             g.user = user.name
             
-            return h.redirect_to('dashboard.index')
+            return h.redirect_to(h.url_for('dashboard.index'))
         else:
             h.flash_error('SAML: Errors appeared while logging process.')
             log.error('{}'.format(errors))
     
-    return h.redirect_to('/saml/login')
+    return h.redirect_to(h.url_for('saml.saml_login'))
 
 def metadata():
     try:
@@ -154,7 +154,7 @@ def saml_login():
     req = prepare_from_flask_request()
     try:
         auth = OneLogin_Saml2_Auth(req, custom_base_path=custom_folder)
-        if 'sso' in request.args and request.args['sso'] == 'true':
+        if 'sso' in request.args and request.args['sso'].lower() == 'true':
             log.info('Redirect to SAML IdP.')
             return h.redirect_to(auth.login())
         else:
@@ -169,7 +169,7 @@ def saml_login():
         h.flash_error('SAML: An issue appeared while validating settings file.')
         log.error('{}'.format(e))
 
-    return h.redirect_to('user.login')
+    return h.redirect_to(h.url_for('user.login'))
 
 
 util_rules = [
