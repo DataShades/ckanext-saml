@@ -1,5 +1,7 @@
 from ckan.common import config
+import logging
 
+log = logging.getLogger(__name__)
 
 def get_helpers():
     return {
@@ -21,11 +23,15 @@ def get_saml_folter_path():
 
 def get_attr_mapper():
     import importlib.util
-    spec = importlib.util.spec_from_file_location(
-        "module.name", get_saml_folter_path() + '/attributemaps/' +
-        config.get('ckan.saml_custom_attr_map', 'mapper.py'))
-    
-    mapper = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mapper)
+    try:
+        spec = importlib.util.spec_from_file_location(
+            "module.name", get_saml_folter_path() + '/attributemaps/' +
+            config.get('ckan.saml_custom_attr_map', 'mapper.py'))
+        
+        mapper = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mapper)
+    except Exception as e:
+        log.error("{0}".format(e))
+        return None
     
     return mapper.MAP

@@ -90,37 +90,41 @@ def index():
                     mapped_data = {}
 
                     log.info('Extracting data from IdP response.')
-                    for key, value in attr_mapper.items():
-                        field = auth.get_attribute(value)
-                        if field:
-                            mapped_data[key] = field
+                    if attr_mapper:
+                        for key, value in attr_mapper.items():
+                            field = auth.get_attribute(value)
+                            if field:
+                                mapped_data[key] = field
 
-                    user_dict = {
-                        'name': _get_random_username_from_email(
-                            mapped_data['email'][0]),
-                        'email': mapped_data['email'][0],
-                        'id': str(uuid.uuid4()),
-                        'password': str(uuid.uuid4()),
-                    }
-                    try:
-                        log.info(
-                            ('Trying to create User with name \'{0}\''.format(
-                            user_dict['name']
-                            ))
-                        )
-                        new_user = logic.get_action('user_create')(
-                            {'ignore_auth': True}, user_dict)
-                        if new_user:
-                            model.Session.add(SAML2User(
-                                id=new_user['id'],
-                                name_id=nameid)
-                            )
-                            model.Session.commit()
+                        user_dict = {
+                            'name': _get_random_username_from_email(
+                                mapped_data['email'][0]),
+                            'email': mapped_data['email'][0],
+                            'id': str(uuid.uuid4()),
+                            'password': str(uuid.uuid4()),
+                        }
+                        try:
                             log.info(
-                                'User succesfully created. Authorizing...')
-                        user = model.User.get(new_user['name'])
-                    except Exception as e:
-                        print(e)
+                                ('Trying to create User with name \'{0}\''.format(
+                                user_dict['name']
+                                ))
+                            )
+                            new_user = logic.get_action('user_create')(
+                                {'ignore_auth': True}, user_dict)
+                            if new_user:
+                                model.Session.add(SAML2User(
+                                    id=new_user['id'],
+                                    name_id=nameid)
+                                )
+                                model.Session.commit()
+                                log.info(
+                                    'User succesfully created. Authorizing...')
+                            user = model.User.get(new_user['name'])
+                        except Exception as e:
+                            print(e)
+                            return h.redirect_to(h.url_for('user.login'))
+                    else:
+                        log.error('User mapping is empty, please set "ckan.saml_custom_attr_map" param in config.')
                         return h.redirect_to(h.url_for('user.login'))
                 else:
                     user = model.User.get(saml_user.id)
