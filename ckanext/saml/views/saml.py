@@ -75,26 +75,27 @@ def index():
                 )
                 return h.redirect_to(h.url_for('user.login'))
             else:
-                log.info('NAMEID: {0}'.format(nameid))
-                
-                saml_user = model.Session.query(SAML2User)\
-                    .filter(SAML2User.name_id == nameid).first()
+                mapped_data = {}
 
-                if not saml_user:
-                    log.info(
-                        (
-                            'No User with NAMEID \'{0}\' was found. '
-                            'Creating one.'.format(nameid)
+                log.info('Extracting data from IdP response.')
+
+                if attr_mapper:
+                    for key, value in attr_mapper.items():
+                        field = auth.get_attribute(value)
+                        if field:
+                            mapped_data[key] = field
+                    log.info('NAMEID: {0}'.format(nameid))
+
+                    saml_user = model.Session.query(SAML2User)\
+                        .filter(SAML2User.name_id == nameid).first()
+
+                    if not saml_user:
+                        log.info(
+                            (
+                                'No User with NAMEID \'{0}\' was found. '
+                                'Creating one.'.format(nameid)
+                            )
                         )
-                    )
-                    mapped_data = {}
-
-                    log.info('Extracting data from IdP response.')
-                    if attr_mapper:
-                        for key, value in attr_mapper.items():
-                            field = auth.get_attribute(value)
-                            if field:
-                                mapped_data[key] = field
 
                         user_dict = {
                             'name': _get_random_username_from_email(
@@ -125,11 +126,29 @@ def index():
                             print(e)
                             return h.redirect_to(h.url_for('user.login'))
                     else:
-                        log.error('User mapping is empty, please set "ckan.saml_custom_attr_map" param in config.')
-                        return h.redirect_to(h.url_for('user.login'))
+                        user = model.User.get(saml_user.id)
+                        user_dict = user.as_dict()
+
+                        # Compare User data if update is needed.
+                        check_fields = ['fullname']
+                        update_dict = {}
+
+                        for field in check_fields:
+                            if mapped_data.get(field):
+                                updated = True if mapped_data[field][0] != user_dict[field] else False
+                                if updated:
+                                    update_dict[field] = mapped_data[field][0]
+
+                        if update_dict:
+                            for item in update_dict:
+                                user_dict[item] = update_dict[item]
+                            logic.get_action('user_update')(
+                                {'ignore_auth': True}, user_dict)
+
+                        log.info('User already created. Authorizing...')
                 else:
-                    user = model.User.get(saml_user.id)
-                    log.info('User already created. Authorizing...')
+                    log.error('User mapping is empty, please set "ckan.saml_custom_attr_map" param in config.')
+                    return h.redirect_to(h.url_for('user.login'))
             
             session['samlUserdata'] = auth.get_attributes()
             session['samlNameIdFormat'] = auth.get_nameid_format()
