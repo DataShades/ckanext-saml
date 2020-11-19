@@ -23,7 +23,7 @@ To install ``ckanext-saml``:
 7. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu:
 		sudo service apache2 reload
 
-If error that mentioned below appears on CentOS, you might need to install additional packages - ``yum install xmlsec1-nss-devel xmlsec1-openssl-devel xmlsec1-gnutls-devel``:
+If error that mentioned below appears on CentOS, you might need to install additional packages - ``yum install libxml2-devel xmlsec1-devel xmlsec1-openssl-devel libtool-ltdl-devel``:
 
 		import xmlsec
 		SystemError: null argument to internal routine

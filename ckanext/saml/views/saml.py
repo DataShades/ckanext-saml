@@ -102,6 +102,7 @@ def index():
                             'email': mapped_data['email'][0],
                             'id': str(uuid.uuid4()),
                             'password': str(uuid.uuid4()),
+                            'fullname': mapped_data.get['fullname'][0] if mapped_data.get('fullname') else ''
                         }
                         try:
                             log.info(
