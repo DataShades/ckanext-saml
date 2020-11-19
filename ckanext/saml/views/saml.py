@@ -4,6 +4,7 @@ import uuid
 from flask import Blueprint, make_response, session
 from urllib.parse import urlparse
 
+import ckan.plugins as plugins
 import ckan.lib.base as base
 from ckan.common import request, g, config, _, asbool
 import ckan.lib.helpers as h
@@ -16,6 +17,8 @@ import ckanext.saml.helpers as saml_helpers
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
+
+from ckanext.saml.interfaces import ICKANSAML
 
 log = logging.getLogger(__name__)
 custom_folder =  saml_helpers.get_saml_folter_path()
@@ -86,6 +89,9 @@ def index():
                             mapped_data[key] = field
                     log.info('NAMEID: {0}'.format(nameid))
 
+                    for item in plugins.PluginImplementations(ICKANSAML):
+                        item.after_mapping(mapped_data, auth)
+
                     saml_user = model.Session.query(SAML2User)\
                         .filter(SAML2User.name_id == nameid).first()
 
@@ -149,7 +155,11 @@ def index():
                 else:
                     log.error('User mapping is empty, please set "ckan.saml_custom_attr_map" param in config.')
                     return h.redirect_to(h.url_for('user.login'))
-            
+
+                # Roles and Organizations
+                for item in plugins.PluginImplementations(ICKANSAML):
+                    item.roles_and_organizations(mapped_data, auth, user)            
+
             session['samlUserdata'] = auth.get_attributes()
             session['samlNameIdFormat'] = auth.get_nameid_format()
             session['samlNameId'] = nameid
