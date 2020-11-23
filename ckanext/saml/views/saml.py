@@ -112,13 +112,22 @@ def index():
                             'fullname': mapped_data.get['fullname'][0] if mapped_data.get('fullname') else ''
                         }
                         try:
-                            log.info(
-                                ('Trying to create User with name \'{0}\''.format(
-                                user_dict['name']
-                                ))
-                            )
-                            new_user = logic.get_action('user_create')(
-                                {'ignore_auth': True}, user_dict)
+                            log.info('Check if User with such email already exists.')
+                            user_exist = model.Session.query(model.User)\
+                                .filter(model.User.email == nameid).first()
+
+                            if user_exist:
+                                new_user = user_exist.as_dict()
+                                log_message = 'User is being detected with such NameID, adding to Saml2 table...'
+                            else:
+                                log.info(
+                                    ('Trying to create User with name \'{0}\''.format(
+                                    user_dict['name']
+                                    ))
+                                )
+                                new_user = logic.get_action('user_create')(
+                                    {'ignore_auth': True}, user_dict)
+                                log_message = 'User succesfully created. Authorizing...'
                             if new_user:
                                 model.Session.add(SAML2User(
                                     id=new_user['id'],
@@ -126,7 +135,7 @@ def index():
                                 )
                                 model.Session.commit()
                                 log.info(
-                                    'User succesfully created. Authorizing...')
+                                    log_message)
                             user = model.User.get(new_user['name'])
                         except Exception as e:
                             print(e)
