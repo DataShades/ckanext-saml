@@ -103,14 +103,6 @@ def index():
                             )
                         )
 
-                        user_dict = {
-                            'name': _get_random_username_from_email(
-                                mapped_data['email'][0]),
-                            'email': mapped_data['email'][0],
-                            'id': str(uuid.uuid4()),
-                            'password': str(uuid.uuid4()),
-                            'fullname': mapped_data.get['fullname'][0] if mapped_data.get('fullname') else ''
-                        }
                         try:
                             log.info('Check if User with such email already exists.')
                             user_exist = model.Session.query(model.User)\
@@ -120,11 +112,21 @@ def index():
                                 new_user = user_exist.as_dict()
                                 log_message = 'User is being detected with such NameID, adding to Saml2 table...'
                             else:
+                                user_dict = {
+                                    'name': _get_random_username_from_email(
+                                        mapped_data['email'][0]),
+                                    'email': mapped_data['email'][0],
+                                    'id': str(uuid.uuid4()),
+                                    'password': str(uuid.uuid4()),
+                                    'fullname': mapped_data['fullname'][0] if mapped_data.get('fullname') else ''
+                                }
+
                                 log.info(
                                     ('Trying to create User with name \'{0}\''.format(
                                     user_dict['name']
                                     ))
                                 )
+
                                 new_user = logic.get_action('user_create')(
                                     {'ignore_auth': True}, user_dict)
                                 log_message = 'User succesfully created. Authorizing...'
