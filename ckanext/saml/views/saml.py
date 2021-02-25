@@ -24,6 +24,7 @@ log = logging.getLogger(__name__)
 custom_folder =  saml_helpers.get_saml_folter_path()
 attr_mapper = saml_helpers.get_attr_mapper()
 use_https = config.get('ckan.saml_use_https', 'off')
+use_nameid_as_email = config.get('ckan.saml_use_nameid_as_email', False)
 
 saml_details = [
     'samlUserdata',
@@ -112,10 +113,16 @@ def index():
                                 new_user = user_exist.as_dict()
                                 log_message = 'User is being detected with such NameID, adding to Saml2 table...'
                             else:
+
+                                if use_nameid_as_email:
+                                    email = nameid
+                                else:
+                                    email = mapped_data['email'][0]
+
                                 user_dict = {
                                     'name': _get_random_username_from_email(
-                                        mapped_data['email'][0]),
-                                    'email': mapped_data['email'][0],
+                                        email),
+                                    'email': email,
                                     'id': str(uuid.uuid4()),
                                     'password': str(uuid.uuid4()),
                                     'fullname': mapped_data['fullname'][0] if mapped_data.get('fullname') else ''
