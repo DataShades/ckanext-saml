@@ -31,6 +31,8 @@ If error that mentioned below appears on CentOS, you might need to install addit
 #### Config settings ####
 ``ckan.saml_use_https`` -  Used to send data while **https**, set ``on`` to enable it. By **default** is set to ``off`` and uses **http**.
 
+``ckan.saml_use_nameid_as_email`` -  Set to ``true`` if you want to use NameID as an email for the User in order not to claim it additionally from the IdP. Default is set to ``false``.
+
 ``ckan.saml_login_button_text`` - Provides an ability to customize login button text. By **default** set to ``SAML Login``.
 
 ``ckan.saml_custom_base_path`` - Provides custom path where saml files/folders will be searched. By **default**  set to ``/etc/ckan/default/saml``.
