@@ -105,20 +105,19 @@ def index():
                         )
 
                         try:
+                            if use_nameid_as_email:
+                                email = nameid
+                            else:
+                                email = mapped_data['email'][0]
+
                             log.info('Check if User with such email already exists.')
                             user_exist = model.Session.query(model.User)\
-                                .filter(model.User.email == nameid).first()
+                                .filter(model.User.email == email).first()
 
                             if user_exist:
                                 new_user = user_exist.as_dict()
                                 log_message = 'User is being detected with such NameID, adding to Saml2 table...'
                             else:
-
-                                if use_nameid_as_email:
-                                    email = nameid
-                                else:
-                                    email = mapped_data['email'][0]
-
                                 user_dict = {
                                     'name': _get_random_username_from_email(
                                         email),
@@ -138,10 +137,18 @@ def index():
                                     {'ignore_auth': True}, user_dict)
                                 log_message = 'User succesfully created. Authorizing...'
                             if new_user:
-                                model.Session.add(SAML2User(
-                                    id=new_user['id'],
-                                    name_id=nameid)
-                                )
+                                # Make sure that User ID is not already in saml2_user table
+                                existing_row = model.Session.query(SAML2User)\
+                                    .filter(SAML2User.id == new_user['id'])
+                                if existing_row:
+                                    existing_row.update(
+                                        {'name_id':nameid}
+                                    )
+                                else:
+                                    model.Session.add(SAML2User(
+                                        id=new_user['id'],
+                                        name_id=nameid)
+                                    )
                                 model.Session.commit()
                                 log.info(
                                     log_message)
