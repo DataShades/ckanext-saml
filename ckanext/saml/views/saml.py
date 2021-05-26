@@ -192,6 +192,9 @@ def index():
             
             g.user = user.name
             
+            if 'RelayState' in req['post_data']:
+                return h.redirect_to(req['post_data']['RelayState'])
+
             return h.redirect_to(h.url_for('dashboard.index'))
         else:
             h.flash_error('SAML: Errors appeared while logging process.')
@@ -225,8 +228,11 @@ def saml_login():
     try:
         auth = OneLogin_Saml2_Auth(req, custom_base_path=custom_folder)
         if 'sso' in request.args and request.args['sso'].lower() == 'true':
+            came_from = h.url_for('dashboard.index')
+            if request.args.get('came_from'):
+                came_from = request.args.get('came_from')
             log.info('Redirect to SAML IdP.')
-            return h.redirect_to(auth.login())
+            return h.redirect_to(auth.login(return_to=came_from))
         else:
             log.warning(
                 (
