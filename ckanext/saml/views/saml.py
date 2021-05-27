@@ -228,11 +228,11 @@ def saml_login():
     try:
         auth = OneLogin_Saml2_Auth(req, custom_base_path=custom_folder)
         if 'sso' in request.args and request.args['sso'].lower() == 'true':
-            came_from = h.url_for('dashboard.index')
-            if request.args.get('came_from'):
-                came_from = request.args.get('came_from')
+            redirect = h.url_for('dashboard.index')
+            if request.args.get('redirect'):
+                redirect = request.args.get('redirect')
             log.info('Redirect to SAML IdP.')
-            return h.redirect_to(auth.login(return_to=came_from))
+            return h.redirect_to(auth.login(return_to=redirect))
         else:
             log.warning(
                 (
