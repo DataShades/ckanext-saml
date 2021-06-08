@@ -110,11 +110,12 @@ def index():
                             else:
                                 email = mapped_data['email'][0]
 
-                            log.info('Check if User with such email already exists.')
+                            log.info('Check if User with "{0}" email already exists.'.format(email))
                             user_exist = model.Session.query(model.User)\
                                 .filter(model.User.email == email).first()
 
                             if user_exist:
+                                log.info('Found User "{0}" that has same email.'.format(user_exist.name))
                                 new_user = user_exist.as_dict()
                                 log_message = 'User is being detected with such NameID, adding to Saml2 table...'
                             else:
@@ -139,11 +140,10 @@ def index():
                             if new_user:
                                 # Make sure that User ID is not already in saml2_user table
                                 existing_row = model.Session.query(SAML2User)\
-                                    .filter(SAML2User.id == new_user['id'])
+                                    .filter(SAML2User.id == new_user['id']).first()
                                 if existing_row:
-                                    existing_row.update(
-                                        {'name_id':nameid}
-                                    )
+                                    log.info('Found existing row with such User ID, updating NAMEID...')
+                                    existing_row.name_id = nameid
                                 else:
                                     model.Session.add(SAML2User(
                                         id=new_user['id'],
@@ -193,6 +193,7 @@ def index():
             g.user = user.name
             
             if 'RelayState' in req['post_data']:
+                log.info('Redirecting to "{0}"'.format(req['post_data']['RelayState']))
                 return h.redirect_to(req['post_data']['RelayState'])
 
             return h.redirect_to(h.url_for('dashboard.index'))
