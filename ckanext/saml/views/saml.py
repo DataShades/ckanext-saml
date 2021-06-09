@@ -19,6 +19,8 @@ from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 from ckanext.saml.interfaces import ICKANSAML
+from sqlalchemy import func as sql_func
+
 
 log = logging.getLogger(__name__)
 custom_folder =  saml_helpers.get_saml_folter_path()
@@ -112,7 +114,8 @@ def index():
 
                             log.info('Check if User with "{0}" email already exists.'.format(email))
                             user_exist = model.Session.query(model.User)\
-                                .filter(model.User.email == email).first()
+                                .filter(sql_func.lower(model.User.email) == sql_func.lower(email))\
+                                .filter(model.User.state == 'active').first()
 
                             if user_exist:
                                 log.info('Found User "{0}" that has same email.'.format(user_exist.name))
