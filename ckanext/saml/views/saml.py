@@ -195,7 +195,7 @@ def index():
             
             g.user = user.name
             
-            if 'RelayState' in req['post_data']:
+            if 'RelayState' in req['post_data'] and req['post_data']['RelayState']:
                 log.info('Redirecting to "{0}"'.format(req['post_data']['RelayState']))
                 return h.redirect_to(req['post_data']['RelayState'])
 
