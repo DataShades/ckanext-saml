@@ -70,6 +70,8 @@ The main infomation that is needed for the IdP is the ``AssertionConsumerService
 
 ``ckan.saml_use_root_path`` - This needs to be set to ``true`` if you run your portal using the ``ckan.root_path``. By **default** set to ``false``.
 
+``ckan.saml_relaystate`` - Set a custom RelayState ``path``. By **default** set to ``/dashboard``.
+
 #### SP Metadata file ####
 As mentioned above, you can find SP metadata at ``DOMAIN_NAME/saml/metadata URL`` after configuring ``advanced_settings.json``.
 This **URL** is accessible only to ``sysadmins`` and presented in **XML** format.
