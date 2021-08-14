@@ -232,7 +232,8 @@ def saml_login():
     try:
         auth = OneLogin_Saml2_Auth(req, custom_base_path=custom_folder)
         if 'sso' in request.args and request.args['sso'].lower() == 'true':
-            redirect = h.url_for('dashboard.index')
+            saml_relaystate = config.get('ckan.saml_relaystate', None)
+            redirect = saml_relaystate if saml_relaystate else h.url_for('dashboard.index')
             if request.args.get('redirect'):
                 redirect = request.args.get('redirect')
             log.info('Redirect to SAML IdP.')
