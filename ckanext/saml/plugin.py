@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import ckan.plugins as plugins
-import ckan.plugins.toolkit as toolkit
-from ckan.common import request, g
-import ckan.lib.helpers as h
+import ckan.plugins.toolkit as tk
+
 from flask import session
 
 from ckanext.saml.views import saml
@@ -19,10 +20,7 @@ class SamlPlugin(plugins.SingletonPlugin):
     # IConfigurer
 
     def update_config(self, config_):
-        toolkit.add_template_directory(config_, 'templates')
-        toolkit.add_public_directory(config_, 'public')
-        toolkit.add_resource('fanstatic',
-            'saml')
+        tk.add_template_directory(config_, "templates")
 
     # ITemplateHelpers
 
@@ -32,18 +30,18 @@ class SamlPlugin(plugins.SingletonPlugin):
     # IAuthenticator
 
     def identify(self):
-        if 'samlCKANuser' in session:
-            g.user = session['samlCKANuser']
+        if "samlCKANuser" in session:
+            tk.g.user = session["samlCKANuser"]
             return
 
     def logout(self):
-        if 'samlNameId' in session:
+        if "samlNameId" in session:
             for key in saml.saml_details:
                 del session[key]
 
     # IBlueprint
     def get_blueprint(self):
-        return saml.saml
+        return [saml.saml]
 
     # IClick
     def get_commands(self):
