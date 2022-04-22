@@ -1,6 +1,4 @@
 from __future__ import annotations
-import os
-import json
 import re
 import logging
 import uuid
@@ -21,6 +19,8 @@ from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from ckanext.saml.interfaces import ICKANSAML
 from sqlalchemy import func as sql_func
 
+CONFIG_DYNAMIC = "ckanext.saml.settings.dynamic"
+DEFAULT_DYNAMIC = False
 
 log = logging.getLogger(__name__)
 attr_mapper = saml_helpers.get_attr_mapper()
@@ -58,8 +58,8 @@ def prepare_from_flask_request():
 def index():
     if tk.request.method == "POST":
         req = prepare_from_flask_request()
+        auth = _make_auth(req)
 
-        auth = OneLogin_Saml2_Auth(req, old_settings=tk.h.saml_settings())
         request_id = None
         auth.process_response(request_id=request_id)
         errors = auth.get_errors()
@@ -241,7 +241,7 @@ def metadata():
         tk.abort(403, tk._("Need to be system administrator to administer"))
 
     req = prepare_from_flask_request()
-    auth = OneLogin_Saml2_Auth(req, old_settings=tk.h.saml_settings())
+    auth = _make_auth(req)
 
     settings = auth.get_settings()
     metadata = settings.get_sp_metadata()
@@ -259,7 +259,7 @@ def metadata():
 def saml_login():
     req = prepare_from_flask_request()
     try:
-        auth = OneLogin_Saml2_Auth(req, old_settings=tk.h.saml_settings())
+        auth = _make_auth(req)
         if "sso" in tk.request.args and tk.request.args["sso"].lower() == "true":
             saml_relaystate = tk.config.get("ckan.saml_relaystate", None)
             redirect = (
@@ -282,3 +282,11 @@ def saml_login():
         log.error("{}".format(e))
 
     return h.redirect_to(h.url_for("user.login"))
+
+
+def _make_auth(req) -> OneLogin_Saml2_Auth:
+    if tk.asbool(tk.config.get(CONFIG_DYNAMIC, DEFAULT_DYNAMIC)):
+        return OneLogin_Saml2_Auth(req, old_settings=tk.h.saml_settings())
+
+    custom_folder = tk.h.get_saml_folter_path()
+    return OneLogin_Saml2_Auth(req, custom_base_path=custom_folder)
