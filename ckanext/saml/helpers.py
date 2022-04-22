@@ -61,4 +61,5 @@ def saml_settings() -> dict[str, Any]:
             settings_str = settings_str.replace(f"<{k[len(prefix):]}>", v)
         settings = json.loads(settings_str)
 
+    settings.setdefault('custom_base_path', custom_folder)
     return settings
