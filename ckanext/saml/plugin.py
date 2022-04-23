@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta
+
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
 
@@ -8,6 +10,9 @@ from flask import session
 from ckanext.saml.views import saml
 from ckanext.saml.cli import get_commnads
 from ckanext.saml.helpers import get_helpers
+
+CONFIG_TTL = "ckanext.saml.session.ttl"
+DEFAULT_TTL = 30 * 24 * 3600
 
 
 class SamlPlugin(plugins.SingletonPlugin):
@@ -30,9 +35,18 @@ class SamlPlugin(plugins.SingletonPlugin):
     # IAuthenticator
 
     def identify(self):
-        if "samlCKANuser" in session:
-            tk.g.user = session["samlCKANuser"]
+
+        if "samlCKANuser" not in session:
             return
+
+        now = datetime.utcnow()
+        last_login = session.get("samlLastLogin", now)
+        diff = now - last_login
+
+        ttl = tk.asint(tk.config.get(CONFIG_TTL, DEFAULT_TTL))
+        if diff < timedelta(seconds=ttl):
+            tk.g.user = session["samlCKANuser"]
+
 
     def logout(self):
         if "samlNameId" in session:

@@ -2,6 +2,7 @@ from __future__ import annotations
 import re
 import logging
 import uuid
+from datetime import datetime
 from flask import Blueprint, make_response, session
 from urllib.parse import urlparse
 
@@ -217,6 +218,7 @@ def index():
             session["samlNameIdFormat"] = auth.get_nameid_format()
             session["samlNameId"] = nameid
             session["samlCKANuser"] = user.name
+            session["samlLastLogin"] = datetime.utcnow()
 
             tk.g.user = user.name
 
