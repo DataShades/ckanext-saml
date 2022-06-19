@@ -10,17 +10,23 @@ from flask import session
 from ckanext.saml.views import saml
 from ckanext.saml.cli import get_commnads
 from ckanext.saml.helpers import get_helpers
+from ckanext.saml.logic.action import get_actions
 
 CONFIG_TTL = "ckanext.saml.session.ttl"
 DEFAULT_TTL = 30 * 24 * 3600
 
 
 class SamlPlugin(plugins.SingletonPlugin):
+    plugins.implements(plugins.IActions)
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IAuthenticator, inherit=True)
     plugins.implements(plugins.IBlueprint)
     plugins.implements(plugins.IClick)
     plugins.implements(plugins.ITemplateHelpers)
+
+    # IActions
+    def get_actions(self):
+        return get_actions()
 
     # IConfigurer
 

@@ -9,6 +9,8 @@ import ckan.plugins.toolkit as tk
 
 log = logging.getLogger(__name__)
 
+CONFIG_USE_REMOTE_IDP = "ckanext.saml.metadata.remote_idp"
+DEFAULT_USE_REMOTE_IDP = False
 
 def get_helpers():
     return {
@@ -54,12 +56,16 @@ def saml_settings() -> dict[str, Any]:
 
     with open(os.path.join(custom_folder, "settings.json")) as src:
         settings_str = src.read()
-        prefix = "ckanext.saml.settings.substitution."
-        for k, v in tk.config.items():
-            if not k.startswith(prefix):
-                continue
-            settings_str = settings_str.replace(f"<{k[len(prefix):]}>", v)
-        settings = json.loads(settings_str)
+
+    prefix = "ckanext.saml.settings.substitution."
+    for k, v in tk.config.items():
+        if not k.startswith(prefix):
+            continue
+        settings_str = settings_str.replace(f"<{k[len(prefix):]}>", v)
+    settings = json.loads(settings_str)
+
+    if tk.asbool(tk.config.get(CONFIG_USE_REMOTE_IDP, DEFAULT_USE_REMOTE_IDP)):
+        settings["idp"] = tk.get_action("saml_idp_show")({"ignore_auth": True}, {})
 
     settings.setdefault('custom_base_path', custom_folder)
     return settings
