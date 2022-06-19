@@ -26,8 +26,8 @@ def idp_refresh(context, data_dict):
     meta = Parser.parse_remote(url)
 
     cache = connect_to_redis()
-    cache.set(_idp_key(), json.dumps(meta))
-    return meta
+    cache.set(_idp_key(), json.dumps(meta["idp"]))
+    return meta["idp"]
 
 
 def idp_show(context, data_dict):
