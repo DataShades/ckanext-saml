@@ -6,38 +6,51 @@ import logging
 from typing import Any
 from ckan.common import config
 import ckan.plugins.toolkit as tk
+import ckan.model as model
+
+from ckanext.toolbelt.decorators import Collector
+from ckanext.saml.model.saml2_user import SAML2User
+
 
 log = logging.getLogger(__name__)
 
 CONFIG_USE_REMOTE_IDP = "ckanext.saml.metadata.remote_idp"
 DEFAULT_USE_REMOTE_IDP = False
 
-def get_helpers():
-    return {
-        "get_login_button_text": get_login_button_text,
-        "get_saml_folter_path": get_saml_folter_path,
-        "get_attr_mapper": get_attr_mapper,
-        "saml_settings": saml_settings,
-    }
+helper, get_helpers = Collector("saml").split()
 
 
-def get_login_button_text():
+@helper
+def is_saml_user(name: str) -> bool:
+    user = model.User.get(name)
+    if not user:
+        return False
+
+    return model.Session.query(
+        model.Session.query(SAML2User).filter_by(id=user.id).exists()
+    ).scalar()
+
+
+
+@helper
+def login_button_text():
     text = config.get("ckan.saml_login_button_text", "SAML Login")
     return text
 
 
-def get_saml_folter_path():
+@helper
+def folder_path():
     path = config.get("ckan.saml_custom_base_path", "/etc/ckan/default/saml")
     return path
 
 
-def get_attr_mapper():
+def attr_mapper():
     import importlib.util
 
     try:
         spec = importlib.util.spec_from_file_location(
             "module.name",
-            get_saml_folter_path()
+            tk.h.saml_folder_path()
             + "/attributemaps/"
             + config.get("ckan.saml_custom_attr_map", "mapper.py"),
         )
@@ -51,8 +64,9 @@ def get_attr_mapper():
     return mapper.MAP
 
 
-def saml_settings() -> dict[str, Any]:
-    custom_folder = tk.h.get_saml_folter_path()
+@helper
+def settings() -> dict[str, Any]:
+    custom_folder = tk.h.saml_folder_path()
 
     with open(os.path.join(custom_folder, "settings.json")) as src:
         settings_str = src.read()

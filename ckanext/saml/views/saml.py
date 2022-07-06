@@ -13,7 +13,6 @@ import ckan.model as model
 import ckan.plugins.toolkit as tk
 
 from ckanext.saml.model.saml2_user import SAML2User
-import ckanext.saml.helpers as saml_helpers
 
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 
@@ -24,7 +23,6 @@ CONFIG_DYNAMIC = "ckanext.saml.settings.dynamic"
 DEFAULT_DYNAMIC = False
 
 log = logging.getLogger(__name__)
-attr_mapper = saml_helpers.get_attr_mapper()
 use_https = tk.config.get("ckan.saml_use_https", "off")
 use_nameid_as_email = tk.config.get("ckan.saml_use_nameid_as_email", False)
 
@@ -80,6 +78,7 @@ def index():
                 return h.redirect_to(h.url_for("user.login"))
             else:
                 mapped_data = {}
+                attr_mapper = tk.h.saml_attr_mapper()
                 if attr_mapper:
                     for key, value in attr_mapper.items():
                         field = auth.get_attribute(value)
@@ -292,5 +291,5 @@ def _make_auth(req) -> OneLogin_Saml2_Auth:
     if tk.asbool(tk.config.get(CONFIG_DYNAMIC, DEFAULT_DYNAMIC)):
         return OneLogin_Saml2_Auth(req, old_settings=tk.h.saml_settings())
 
-    custom_folder = tk.h.get_saml_folter_path()
+    custom_folder = tk.h.saml_folder_path()
     return OneLogin_Saml2_Auth(req, custom_base_path=custom_folder)
