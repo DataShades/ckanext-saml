@@ -4,13 +4,12 @@ from datetime import datetime, timedelta
 
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
-
 from flask import session
 
-from ckanext.saml.views import saml
 from ckanext.saml.cli import get_commnads
 from ckanext.saml.helpers import get_helpers
 from ckanext.saml.logic.action import get_actions
+from ckanext.saml.views import saml
 
 CONFIG_TTL = "ckanext.saml.session.ttl"
 DEFAULT_TTL = 30 * 24 * 3600

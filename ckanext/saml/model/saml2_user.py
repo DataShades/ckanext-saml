@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from sqlalchemy import Column, UnicodeText, Boolean
-from sqlalchemy.ext.declarative import declarative_base
 import ckan.model as model
+from sqlalchemy import Boolean, Column, UnicodeText
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base(metadata=model.meta.metadata)
 

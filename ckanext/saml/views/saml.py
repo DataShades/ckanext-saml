@@ -1,24 +1,23 @@
 from __future__ import annotations
-import re
+
 import logging
-from typing import Iterable
+import re
 import uuid
 from datetime import datetime
-from flask import Blueprint, make_response, session
+from typing import Iterable
 from urllib.parse import urlparse
 
-import ckan.plugins as plugins
 import ckan.lib.helpers as h
-from ckan.logic.action.create import _get_random_username_from_email
 import ckan.model as model
+import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
-
-from ckanext.saml.model.saml2_user import SAML2User
-
+from ckan.logic.action.create import _get_random_username_from_email
+from flask import Blueprint, make_response, session
 from onelogin.saml2.auth import OneLogin_Saml2_Auth, OneLogin_Saml2_Authn_Request
+from sqlalchemy import func as sql_func
 
 from ckanext.saml.interfaces import ICKANSAML
-from sqlalchemy import func as sql_func
+from ckanext.saml.model.saml2_user import SAML2User
 
 CONFIG_DYNAMIC = "ckanext.saml.settings.dynamic"
 DEFAULT_DYNAMIC = False

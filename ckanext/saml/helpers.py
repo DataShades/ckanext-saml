@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-import os
 import json
 import logging
+import os
 from typing import Any
-from ckan.common import config
-import ckan.plugins.toolkit as tk
+
 import ckan.model as model
+import ckan.plugins.toolkit as tk
+from ckan.common import config
 
-from ckanext.toolbelt.decorators import Collector
 from ckanext.saml.model.saml2_user import SAML2User
-
+from ckanext.toolbelt.decorators import Collector
 
 log = logging.getLogger(__name__)
 

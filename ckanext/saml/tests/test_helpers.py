@@ -1,10 +1,9 @@
-import pytest
-
 import ckan.model as model
 import ckan.plugins.toolkit as tk
+import pytest
 
-from ckanext.saml.model.saml2_user import SAML2User
 import ckanext.saml.helpers as h
+from ckanext.saml.model.saml2_user import SAML2User
 
 
 @pytest.mark.usefixtures("with_plugins", "clean_db")
