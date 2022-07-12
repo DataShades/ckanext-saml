@@ -32,7 +32,6 @@ saml_details = ["samlUserdata", "samlNameIdFormat", "samlNameId", "samlCKANuser"
 saml = Blueprint("saml", __name__)
 
 
-
 def prepare_from_flask_request():
     url_data = urlparse(tk.request.url)
 
@@ -92,7 +91,9 @@ def index():
                         item.after_mapping(mapped_data, auth)
                     log.debug("Client data: %s", attr_mapper)
                     log.debug("Mapped data: %s", mapped_data)
-                    log.debug("If you are experiencing login issues, make sure that email is present in the mapped data")
+                    log.debug(
+                        "If you are experiencing login issues, make sure that email is present in the mapped data"
+                    )
                     saml_user = (
                         model.Session.query(SAML2User)
                         .filter(SAML2User.name_id == nameid)

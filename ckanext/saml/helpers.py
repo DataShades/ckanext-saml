@@ -36,7 +36,6 @@ def is_saml_user(name: str) -> bool:
     ).scalar()
 
 
-
 @helper
 def login_button_text():
     text = config.get(CONFIG_LOGIN_TEXT, DEFAULT_LOGIN_TEXT)
@@ -92,5 +91,5 @@ def settings() -> dict[str, Any]:
     if tk.asbool(tk.config.get(CONFIG_USE_REMOTE_IDP, DEFAULT_USE_REMOTE_IDP)):
         settings["idp"] = tk.get_action("saml_idp_show")({"ignore_auth": True}, {})
 
-    settings.setdefault('custom_base_path', custom_folder)
+    settings.setdefault("custom_base_path", custom_folder)
     return settings

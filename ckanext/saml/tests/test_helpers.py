@@ -35,10 +35,10 @@ def test_folder_path(ckan_config, monkeypatch, faker):
     assert tk.h.saml_folder_path() == path
 
 
-
 @pytest.mark.usefixtures("with_plugins")
 def test_attr_mapper(ckan_config, monkeypatch, faker):
     assert tk.h.saml_attr_mapper() is None
+
 
 @pytest.mark.usefixtures("with_plugins")
 def test_settings(ckan_config, monkeypatch, faker):

@@ -22,6 +22,5 @@ class ICKANSAML(Interface):
         pass
 
     def saml_auth_class(self) -> Optional[OneLogin_Saml2_Auth]:
-        """Custom SamlAuthenticator(subclass of OneLogin_Saml2_Auth)
-        """
+        """Custom SamlAuthenticator(subclass of OneLogin_Saml2_Auth)"""
         pass

@@ -53,7 +53,6 @@ class SamlPlugin(plugins.SingletonPlugin):
         if diff < timedelta(seconds=ttl):
             tk.g.user = session["samlCKANuser"]
 
-
     def logout(self):
         if "samlNameId" in session:
             for key in saml.saml_details:
