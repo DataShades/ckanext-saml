@@ -15,7 +15,12 @@ from ckanext.saml.model.saml2_user import SAML2User
 log = logging.getLogger(__name__)
 
 CONFIG_USE_REMOTE_IDP = "ckanext.saml.metadata.remote_idp"
+CONFIG_LOGIN_TEXT = "ckan.saml_login_button_text"
+CONFIG_FOLDER_PATH = "ckan.saml_custom_base_path"
+
 DEFAULT_USE_REMOTE_IDP = False
+DEFAULT_LOGIN_TEXT = "SAML Login"
+DEFAULT_FOLDER_PATH = "/etc/ckan/default/saml"
 
 helper, get_helpers = Collector("saml").split()
 
@@ -34,13 +39,13 @@ def is_saml_user(name: str) -> bool:
 
 @helper
 def login_button_text():
-    text = config.get("ckan.saml_login_button_text", "SAML Login")
+    text = config.get(CONFIG_LOGIN_TEXT, DEFAULT_LOGIN_TEXT)
     return text
 
 
 @helper
 def folder_path():
-    path = config.get("ckan.saml_custom_base_path", "/etc/ckan/default/saml")
+    path = config.get(CONFIG_FOLDER_PATH, DEFAULT_FOLDER_PATH)
     return path
 
 
@@ -69,7 +74,12 @@ def attr_mapper():
 def settings() -> dict[str, Any]:
     custom_folder = tk.h.saml_folder_path()
 
-    with open(os.path.join(custom_folder, "settings.json")) as src:
+    filepath = os.path.join(custom_folder, "settings.json")
+    if not os.path.exists(filepath):
+        log.warning("SAML2 settings file not found: %s", filepath)
+        return {}
+
+    with open(filepath) as src:
         settings_str = src.read()
 
     prefix = "ckanext.saml.settings.substitution."

@@ -1,6 +1,7 @@
 from __future__ import annotations
 import re
 import logging
+from typing import Iterable
 import uuid
 from datetime import datetime
 from flask import Blueprint, make_response, session
@@ -14,7 +15,7 @@ import ckan.plugins.toolkit as tk
 
 from ckanext.saml.model.saml2_user import SAML2User
 
-from onelogin.saml2.auth import OneLogin_Saml2_Auth
+from onelogin.saml2.auth import OneLogin_Saml2_Auth, OneLogin_Saml2_Authn_Request
 
 from ckanext.saml.interfaces import ICKANSAML
 from sqlalchemy import func as sql_func
@@ -29,6 +30,7 @@ use_nameid_as_email = tk.config.get("ckan.saml_use_nameid_as_email", False)
 saml_details = ["samlUserdata", "samlNameIdFormat", "samlNameId", "samlCKANuser"]
 
 saml = Blueprint("saml", __name__)
+
 
 
 def prepare_from_flask_request():
@@ -288,8 +290,15 @@ def saml_login():
 
 
 def _make_auth(req) -> OneLogin_Saml2_Auth:
+    for p in plugins.PluginImplementations(ICKANSAML):
+        Auth = p.saml_auth_class()
+        if Auth:
+            break
+    else:
+        Auth = OneLogin_Saml2_Auth
+
     if tk.asbool(tk.config.get(CONFIG_DYNAMIC, DEFAULT_DYNAMIC)):
-        return OneLogin_Saml2_Auth(req, old_settings=tk.h.saml_settings())
+        return Auth(req, old_settings=tk.h.saml_settings())
 
     custom_folder = tk.h.saml_folder_path()
-    return OneLogin_Saml2_Auth(req, custom_base_path=custom_folder)
+    return Auth(req, custom_base_path=custom_folder)
