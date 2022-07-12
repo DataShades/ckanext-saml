@@ -44,6 +44,7 @@ def folder_path():
     return path
 
 
+@helper
 def attr_mapper():
     import importlib.util
 
