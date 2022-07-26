@@ -4,7 +4,6 @@ import logging
 import re
 import uuid
 from datetime import datetime
-from typing import Iterable
 from urllib.parse import urlparse
 
 import ckan.lib.helpers as h
@@ -13,11 +12,11 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
 from ckan.logic.action.create import _get_random_username_from_email
 from flask import Blueprint, make_response, session
-from onelogin.saml2.auth import OneLogin_Saml2_Auth, OneLogin_Saml2_Authn_Request
+from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from sqlalchemy import func as sql_func
 
 from ckanext.saml.interfaces import ICKANSAML
-from ckanext.saml.model.saml2_user import SAML2User
+from ckanext.saml.model.user import User
 
 CONFIG_DYNAMIC = "ckanext.saml.settings.dynamic"
 DEFAULT_DYNAMIC = False
@@ -94,8 +93,8 @@ def index():
                         "If you are experiencing login issues, make sure that email is present in the mapped data"
                     )
                     saml_user = (
-                        model.Session.query(SAML2User)
-                        .filter(SAML2User.name_id == nameid)
+                        model.Session.query(User)
+                        .filter(User.name_id == nameid)
                         .first()
                     )
 
@@ -162,8 +161,8 @@ def index():
                             if new_user:
                                 # Make sure that User ID is not already in saml2_user table
                                 existing_row = (
-                                    model.Session.query(SAML2User)
-                                    .filter(SAML2User.id == new_user["id"])
+                                    model.Session.query(User)
+                                    .filter(User.id == new_user["id"])
                                     .first()
                                 )
                                 if existing_row:
@@ -173,7 +172,7 @@ def index():
                                     existing_row.name_id = nameid
                                 else:
                                     model.Session.add(
-                                        SAML2User(id=new_user["id"], name_id=nameid)
+                                        User(id=new_user["id"], name_id=nameid)
                                     )
                                 model.Session.commit()
                                 log.debug(log_message)
@@ -241,7 +240,7 @@ def index():
 def metadata():
     try:
         context = dict(model=model, user=tk.g.user, auth_user_obj=tk.g.userobj)
-        # tk.check_access(u'sysadmin', context)
+        tk.check_access(u'sysadmin', context)
     except tk.NotAuthorized:
         tk.abort(403, tk._("Need to be system administrator to administer"))
 
@@ -265,7 +264,8 @@ def saml_login():
     req = prepare_from_flask_request()
     try:
         auth = _make_auth(req)
-        if "sso" in tk.request.args and tk.request.args["sso"].lower() == "true":
+
+        if tk.asbool(tk.request.args.get("sso")):
             saml_relaystate = tk.config.get("ckan.saml_relaystate", None)
             redirect = (
                 saml_relaystate if saml_relaystate else h.url_for("dashboard.index")

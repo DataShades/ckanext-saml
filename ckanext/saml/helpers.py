@@ -9,7 +9,7 @@ import ckan.model as model
 import ckan.plugins.toolkit as tk
 from ckan.common import config
 
-from ckanext.saml.model.saml2_user import SAML2User
+from ckanext.saml.model.user import User
 from ckanext.toolbelt.decorators import Collector
 
 log = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ def is_saml_user(name: str) -> bool:
         return False
 
     return model.Session.query(
-        model.Session.query(SAML2User).filter_by(id=user.id).exists()
+        model.Session.query(User).filter_by(id=user.id).exists()
     ).scalar()
 
 
