@@ -172,7 +172,7 @@ def index():
                                     existing_row.name_id = nameid
                                 else:
                                     model.Session.add(
-                                        User(id=new_user["id"], name_id=nameid)
+                                        User(id=new_user["id"], name_id=nameid, attributes=mapped_data)
                                     )
                                 model.Session.commit()
                                 log.debug(log_message)
@@ -183,6 +183,7 @@ def index():
                     else:
                         user = model.User.get(saml_user.id)
                         user_dict = user.as_dict()
+                        saml_user.attributes = mapped_data
 
                         # Compare User data if update is needed.
                         check_fields = ["fullname"]
@@ -204,7 +205,7 @@ def index():
                             tk.get_action("user_update")(
                                 {"ignore_auth": True}, user_dict
                             )
-
+                        model.Session.commit()
                         log.info("User already created. Authorizing...")
                 else:
                     log.error(

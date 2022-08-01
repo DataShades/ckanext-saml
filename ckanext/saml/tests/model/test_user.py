@@ -25,3 +25,17 @@ class TestUser:
 
         stored = model.Session.query(User).filter_by(id=su.id).one_or_none()
         assert stored is None
+
+    def test_attributes(self, user):
+        su = User(id=user["id"], name_id="test")
+        model.Session.add(su)
+        model.Session.commit()
+
+        assert su.attributes == {}
+
+        su.attributes = {"id": "test"}
+        model.Session.commit()
+
+        su = model.Session.query(User).filter_by(id=su.id).one()
+
+        assert su.attributes == {"id": "test"}
