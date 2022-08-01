@@ -17,7 +17,7 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column("saml2_user", sa.Column("attributes", JSONB, nullable=False))
+    op.add_column("saml2_user", sa.Column("attributes", JSONB, nullable=False, server_default="{}"))
     pass
 
 
