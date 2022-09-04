@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import logging
-import re
 import uuid
 from datetime import datetime
-from urllib.parse import urlparse
 
 import ckan.lib.helpers as h
 import ckan.model as model
@@ -12,51 +10,38 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
 from ckan.logic.action.create import _get_random_username_from_email
 from flask import Blueprint, make_response, session
-from onelogin.saml2.auth import OneLogin_Saml2_Auth
+
 from sqlalchemy import func as sql_func
 
 from ckanext.saml.interfaces import ICKANSAML
 from ckanext.saml.model.user import User
+from ckanext.saml import utils
 
-CONFIG_DYNAMIC = "ckanext.saml.settings.dynamic"
-DEFAULT_DYNAMIC = False
 
 log = logging.getLogger(__name__)
-use_https = tk.config.get("ckan.saml_use_https", "off")
 use_nameid_as_email = tk.config.get("ckan.saml_use_nameid_as_email", False)
 
 saml_details = ["samlUserdata", "samlNameIdFormat", "samlNameId", "samlCKANuser"]
 
 saml = Blueprint("saml", __name__)
 
+def get_bp():
+    if tk.h.saml_slo_enabled():
+        saml.add_url_rule("/slo/post", view_func=logout)
+    return saml
 
-def prepare_from_flask_request():
-    url_data = urlparse(tk.request.url)
 
-    req_path = tk.request.path
-    if tk.asbool(tk.config.get("ckan.saml_use_root_path", False)):
-        # FIX FOR ROOT_PATH REMOVED IN request.path
-        root_path = tk.config.get("ckan.root_path", None)
-        if root_path:
-            root_path = re.sub("/{{LANG}}", "", root_path)
-            req_path = root_path + req_path
+def logout():
+    return tk.h.redirect_to('user.logout')
 
-    return {
-        "https": use_https,
-        "http_host": tk.request.host,
-        "server_port": url_data.port,
-        "script_name": req_path,
-        "get_data": tk.request.args.copy(),
-        "post_data": tk.request.form.copy(),
-    }
 
 
 @saml.route("/saml/", methods=["GET", "POST"])
 @saml.route("/sso/post", methods=["GET", "POST"])
 def index():
     if tk.request.method == "POST":
-        req = prepare_from_flask_request()
-        auth = _make_auth(req)
+        req = utils.prepare_from_flask_request()
+        auth = utils.make_auth(req)
 
         request_id = None
         auth.process_response(request_id=request_id)
@@ -78,6 +63,8 @@ def index():
             else:
                 mapped_data = {}
                 attr_mapper = tk.h.saml_attr_mapper()
+                attrs = auth.get_attributes()
+
                 if attr_mapper:
                     for key, value in attr_mapper.items():
                         field = auth.get_attribute(value)
@@ -245,8 +232,8 @@ def metadata():
     except tk.NotAuthorized:
         tk.abort(403, tk._("Need to be system administrator to administer"))
 
-    req = prepare_from_flask_request()
-    auth = _make_auth(req)
+    req = utils.prepare_from_flask_request()
+    auth = utils.make_auth(req)
 
     settings = auth.get_settings()
     metadata = settings.get_sp_metadata()
@@ -262,9 +249,9 @@ def metadata():
 
 @saml.route("/saml/login")
 def saml_login():
-    req = prepare_from_flask_request()
+    req = utils.prepare_from_flask_request()
     try:
-        auth = _make_auth(req)
+        auth = utils.make_auth(req)
 
         if tk.asbool(tk.request.args.get("sso")):
             saml_relaystate = tk.config.get("ckan.saml_relaystate", None)
@@ -288,18 +275,3 @@ def saml_login():
         log.error("{}".format(e))
 
     return h.redirect_to(h.url_for("user.login"))
-
-
-def _make_auth(req) -> OneLogin_Saml2_Auth:
-    for p in plugins.PluginImplementations(ICKANSAML):
-        Auth = p.saml_auth_class()
-        if Auth:
-            break
-    else:
-        Auth = OneLogin_Saml2_Auth
-
-    if tk.asbool(tk.config.get(CONFIG_DYNAMIC, DEFAULT_DYNAMIC)):
-        return Auth(req, old_settings=tk.h.saml_settings())
-
-    custom_folder = tk.h.saml_folder_path()
-    return Auth(req, custom_base_path=custom_folder)
