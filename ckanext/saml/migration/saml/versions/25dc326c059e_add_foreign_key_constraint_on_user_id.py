@@ -17,6 +17,14 @@ depends_on = None
 
 
 def upgrade():
+    op.get_context().connection.execute("""
+    DELETE FROM saml2_user
+    WHERE id IN (
+        SELECT s.id FROM saml2_user s
+        LEFT JOIN "user" u ON u.id = s.id
+        WHERE u.id IS NULL
+    )""")
+
     op.create_foreign_key(
         "saml2_user_id_fkey",
         "saml2_user",
