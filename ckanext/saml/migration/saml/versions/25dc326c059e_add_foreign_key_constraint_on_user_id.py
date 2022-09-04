@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '25dc326c059e'
-down_revision = '92745f8a6168'
+revision = "25dc326c059e"
+down_revision = "92745f8a6168"
 branch_labels = None
 depends_on = None
 
@@ -26,10 +26,9 @@ def upgrade():
     )
 
 
-
 def downgrade():
     op.drop_constraint(
         "saml2_user_id_fkey",
         "saml2_user",
-        type_=u"foreignkey",
+        type_="foreignkey",
     )

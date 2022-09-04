@@ -3,6 +3,7 @@ import pytest
 import ckan.model as model
 from ckanext.saml.model import User
 
+
 @pytest.mark.usefixtures("with_plugins", "clean_db")
 class TestUser:
     def test_relationship(self, user):

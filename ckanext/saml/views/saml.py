@@ -25,6 +25,7 @@ saml_details = ["samlUserdata", "samlNameIdFormat", "samlNameId", "samlCKANuser"
 
 saml = Blueprint("saml", __name__)
 
+
 def get_bp():
     if tk.h.saml_slo_enabled():
         saml.add_url_rule("/slo/post", view_func=logout)
@@ -32,8 +33,7 @@ def get_bp():
 
 
 def logout():
-    return tk.h.redirect_to('user.logout')
-
+    return tk.h.redirect_to("user.logout")
 
 
 @saml.route("/saml/", methods=["GET", "POST"])
@@ -80,9 +80,7 @@ def index():
                         "If you are experiencing login issues, make sure that email is present in the mapped data"
                     )
                     saml_user = (
-                        model.Session.query(User)
-                        .filter(User.name_id == nameid)
-                        .first()
+                        model.Session.query(User).filter(User.name_id == nameid).first()
                     )
 
                     if not saml_user:
@@ -159,7 +157,11 @@ def index():
                                     existing_row.name_id = nameid
                                 else:
                                     model.Session.add(
-                                        User(id=new_user["id"], name_id=nameid, attributes=mapped_data)
+                                        User(
+                                            id=new_user["id"],
+                                            name_id=nameid,
+                                            attributes=mapped_data,
+                                        )
                                     )
                                 model.Session.commit()
                                 log.debug(log_message)
@@ -228,7 +230,7 @@ def index():
 def metadata():
     try:
         context = dict(model=model, user=tk.g.user, auth_user_obj=tk.g.userobj)
-        tk.check_access(u'sysadmin', context)
+        tk.check_access("sysadmin", context)
     except tk.NotAuthorized:
         tk.abort(403, tk._("Need to be system administrator to administer"))
 

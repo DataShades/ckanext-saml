@@ -39,6 +39,8 @@ def idp_show(context, data_dict):
     cache = connect_to_redis()
     value = cache.get(_idp_key())
     if not value:
-        raise tk.ObjectNotFound("No IdP details found. `ckanapi action saml_idp_refresh` may solve this problem")
+        raise tk.ObjectNotFound(
+            "No IdP details found. `ckanapi action saml_idp_refresh` may solve this problem"
+        )
 
     return json.loads(value)

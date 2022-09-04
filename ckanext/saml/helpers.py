@@ -31,18 +31,14 @@ helper, get_helpers = Collector("saml").split()
 
 @helper
 def slo_enabled():
-    return tk.asbool(
-        tk.config.get(
-            CONFIG_SLO_ENABLED, DEFAULT_SLO_ENABLED
-        )
-    )
+    return tk.asbool(tk.config.get(CONFIG_SLO_ENABLED, DEFAULT_SLO_ENABLED))
+
 
 @helper
 def logout_url() -> str:
     req = utils.prepare_from_flask_request()
     auth = utils.make_auth(req)
     return auth.logout()
-
 
 
 @helper

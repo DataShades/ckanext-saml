@@ -18,4 +18,7 @@ class User(Base):
     allow_update = Column(Boolean, default=False)
     attributes = Column(JSONB, nullable=False, default=dict)
 
-    user = relationship(model.User, backref=backref("saml2_user", uselist=False, cascade="all, delete-orphan"))
+    user = relationship(
+        model.User,
+        backref=backref("saml2_user", uselist=False, cascade="all, delete-orphan"),
+    )

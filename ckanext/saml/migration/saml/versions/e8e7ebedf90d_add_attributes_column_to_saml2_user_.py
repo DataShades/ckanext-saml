@@ -10,14 +10,17 @@ import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
 
 # revision identifiers, used by Alembic.
-revision = 'e8e7ebedf90d'
-down_revision = '25dc326c059e'
+revision = "e8e7ebedf90d"
+down_revision = "25dc326c059e"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.add_column("saml2_user", sa.Column("attributes", JSONB, nullable=False, server_default="{}"))
+    op.add_column(
+        "saml2_user",
+        sa.Column("attributes", JSONB, nullable=False, server_default="{}"),
+    )
     pass
 
 
