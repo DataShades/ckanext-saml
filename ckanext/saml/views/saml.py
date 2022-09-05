@@ -85,9 +85,7 @@ def post_login():
             log.debug(
                 "If you are experiencing login issues, make sure that email is present in the mapped data"
             )
-            saml_user = (
-                model.Session.query(User).filter(User.name_id == nameid).first()
-            )
+            saml_user = model.Session.query(User).filter(User.name_id == nameid).first()
 
             if not saml_user:
                 log.debug(
@@ -104,15 +102,12 @@ def post_login():
                         email = mapped_data["email"][0]
 
                     log.debug(
-                        'Check if User with "{0}" email already exists.'.format(
-                            email
-                        )
+                        'Check if User with "{0}" email already exists.'.format(email)
                     )
                     user_exist = (
                         model.Session.query(model.User)
                         .filter(
-                            sql_func.lower(model.User.email)
-                            == sql_func.lower(email)
+                            sql_func.lower(model.User.email) == sql_func.lower(email)
                         )
                         .filter(model.User.state == "active")
                         .first()
@@ -187,9 +182,7 @@ def post_login():
                 for field in check_fields:
                     if mapped_data.get(field):
                         updated = (
-                            True
-                            if mapped_data[field][0] != user_dict[field]
-                            else False
+                            True if mapped_data[field][0] != user_dict[field] else False
                         )
                         if updated:
                             update_dict[field] = mapped_data[field][0]
@@ -197,9 +190,7 @@ def post_login():
                 if update_dict:
                     for item in update_dict:
                         user_dict[item] = update_dict[item]
-                    tk.get_action("user_update")(
-                        {"ignore_auth": True}, user_dict
-                    )
+                    tk.get_action("user_update")({"ignore_auth": True}, user_dict)
                 model.Session.commit()
                 log.info("User already created. Authorizing...")
         else:

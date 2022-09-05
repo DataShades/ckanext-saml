@@ -38,9 +38,12 @@ def prepare_from_flask_request() -> dict[str, Any]:
 
     host = tk.request.host
     static_host = tk.config.get(CONFIG_STATIC_HOST, DEFAULT_STATIC_HOST)
-    forwarded_host = tk.request.environ.get('HTTP_X_FORWARDED_HOST')
+    forwarded_host = tk.request.environ.get("HTTP_X_FORWARDED_HOST")
 
-    if tk.asbool(tk.config.get(CONFIG_USE_FORWARDED_HOST, DEFAULT_USE_FORWARDED_HOST)) and forwarded_host:
+    if (
+        tk.asbool(tk.config.get(CONFIG_USE_FORWARDED_HOST, DEFAULT_USE_FORWARDED_HOST))
+        and forwarded_host
+    ):
         host = forwarded_host
     elif static_host:
         host = static_host
