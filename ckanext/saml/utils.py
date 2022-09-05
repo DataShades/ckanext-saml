@@ -18,6 +18,12 @@ DEFAULT_HTTPS = "off"
 CONFIG_DYNAMIC = "ckanext.saml.settings.dynamic"
 DEFAULT_DYNAMIC = False
 
+CONFIG_USE_FORWARDED_HOST = "ckanext.saml.use_forwarded_host"
+DEFAULT_USE_FORWARDED_HOST = False
+
+CONFIG_STATIC_HOST = "ckanext.saml.static_host"
+DEFAULT_STATIC_HOST = None
+
 
 def prepare_from_flask_request() -> dict[str, Any]:
     url_data = urlparse(tk.request.url)
@@ -30,9 +36,18 @@ def prepare_from_flask_request() -> dict[str, Any]:
             root_path = re.sub("/{{LANG}}", "", root_path)
             req_path = root_path + req_path
 
+    host = tk.request.host
+    static_host = tk.config.get(CONFIG_STATIC_HOST, DEFAULT_STATIC_HOST)
+    forwarded_host = tk.request.environ.get('HTTP_X_FORWARDED_HOST')
+
+    if tk.asbool(tk.config.get(CONFIG_USE_FORWARDED_HOST, DEFAULT_USE_FORWARDED_HOST)) and forwarded_host:
+        host = forwarded_host
+    elif static_host:
+        host = static_host
+
     return {
         "https": tk.config.get(CONFIG_HTTPS, DEFAULT_HTTPS),
-        "http_host": tk.request.host,
+        "http_host": host,
         "server_port": url_data.port,
         "script_name": req_path,
         "get_data": tk.request.args.copy(),
