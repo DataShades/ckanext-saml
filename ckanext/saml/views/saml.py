@@ -67,141 +67,143 @@ def post_login():
             )
         )
         return h.redirect_to(h.url_for("user.login"))
-    else:
-        mapped_data = {}
-        attr_mapper = tk.h.saml_attr_mapper()
 
-        if attr_mapper:
-            for key, value in attr_mapper.items():
-                field = auth.get_attribute(value)
-                if field:
-                    mapped_data[key] = field
-            log.debug("NAMEID: {0}".format(nameid))
+    mapped_data = {}
+    attr_mapper = tk.h.saml_attr_mapper()
 
-            for item in plugins.PluginImplementations(ICKANSAML):
-                item.after_mapping(mapped_data, auth)
-            log.debug("Client data: %s", attr_mapper)
-            log.debug("Mapped data: %s", mapped_data)
+    if not attr_mapper:
+        log.error(
+            'User mapping is empty, please set "ckan.saml_custom_attr_map" param in config.'
+        )
+        return h.redirect_to(h.url_for("user.login"))
+
+
+    for key, value in attr_mapper.items():
+        field = auth.get_attribute(value)
+        if field:
+            mapped_data[key] = field
+    log.debug("NAMEID: {0}".format(nameid))
+
+    for item in plugins.PluginImplementations(ICKANSAML):
+        item.after_mapping(mapped_data, auth)
+    log.debug("Client data: %s", attr_mapper)
+    log.debug("Mapped data: %s", mapped_data)
+    log.debug(
+        "If you are experiencing login issues, make sure that email is present in the mapped data"
+    )
+    saml_user = model.Session.query(User).filter(User.name_id == nameid).first()
+
+    if not saml_user:
+        log.debug(
+            "No User with NAMEID '{0}' was found. "
+            "Creating one.".format(nameid)
+        )
+
+        try:
+            if use_nameid_as_email:
+                email = nameid
+            else:
+                email = mapped_data["email"][0]
+
             log.debug(
-                "If you are experiencing login issues, make sure that email is present in the mapped data"
+                'Check if User with "{0}" email already exists.'.format(email)
             )
-            saml_user = model.Session.query(User).filter(User.name_id == nameid).first()
+            user_exist = (
+                model.Session.query(model.User)
+                .filter(
+                    sql_func.lower(model.User.email) == sql_func.lower(email)
+                )
+                .filter(model.User.state == "active")
+                .first()
+            )
 
-            if not saml_user:
+            if user_exist:
+                log.debug(
+                    'Found User "{0}" that has same email.'.format(
+                        user_exist.name
+                    )
+                )
+                new_user = user_exist.as_dict()
+                log_message = "User is being detected with such NameID, adding to Saml2 table..."
+            else:
+                user_dict = {
+                    "name": _get_random_username_from_email(email),
+                    "email": email,
+                    "id": str(uuid.uuid4()),
+                    "password": str(uuid.uuid4()),
+                    "fullname": mapped_data["fullname"][0]
+                    if mapped_data.get("fullname")
+                    else "",
+                }
+
                 log.debug(
                     (
-                        "No User with NAMEID '{0}' was found. "
-                        "Creating one.".format(nameid)
+                        "Trying to create User with name '{0}'".format(
+                            user_dict["name"]
+                        )
                     )
                 )
 
-                try:
-                    if use_nameid_as_email:
-                        email = nameid
-                    else:
-                        email = mapped_data["email"][0]
+                new_user = tk.get_action("user_create")(
+                    {"ignore_auth": True}, user_dict
+                )
+                log_message = "User succesfully created. Authorizing..."
 
-                    log.debug(
-                        'Check if User with "{0}" email already exists.'.format(email)
-                    )
-                    user_exist = (
-                        model.Session.query(model.User)
-                        .filter(
-                            sql_func.lower(model.User.email) == sql_func.lower(email)
-                        )
-                        .filter(model.User.state == "active")
-                        .first()
-                    )
-
-                    if user_exist:
-                        log.debug(
-                            'Found User "{0}" that has same email.'.format(
-                                user_exist.name
-                            )
-                        )
-                        new_user = user_exist.as_dict()
-                        log_message = "User is being detected with such NameID, adding to Saml2 table..."
-                    else:
-                        user_dict = {
-                            "name": _get_random_username_from_email(email),
-                            "email": email,
-                            "id": str(uuid.uuid4()),
-                            "password": str(uuid.uuid4()),
-                            "fullname": mapped_data["fullname"][0]
-                            if mapped_data.get("fullname")
-                            else "",
-                        }
-
-                        log.debug(
-                            (
-                                "Trying to create User with name '{0}'".format(
-                                    user_dict["name"]
-                                )
-                            )
-                        )
-
-                        new_user = tk.get_action("user_create")(
-                            {"ignore_auth": True}, user_dict
-                        )
-                        log_message = "User succesfully created. Authorizing..."
-                    if new_user:
-                        # Make sure that User ID is not already in saml2_user table
-                        existing_row = (
-                            model.Session.query(User)
-                            .filter(User.id == new_user["id"])
-                            .first()
-                        )
-                        if existing_row:
-                            log.debug(
-                                "Found existing row with such User ID, updating NAMEID..."
-                            )
-                            existing_row.name_id = nameid
-                        else:
-                            model.Session.add(
-                                User(
-                                    id=new_user["id"],
-                                    name_id=nameid,
-                                    attributes=mapped_data,
-                                )
-                            )
-                        model.Session.commit()
-                        log.debug(log_message)
-                    user = model.User.get(new_user["name"])
-                except Exception as e:
-                    print(e)
-                    return h.redirect_to(h.url_for("user.login"))
-            else:
-                user = model.User.get(saml_user.id)
-                user_dict = user.as_dict()
-                saml_user.attributes = mapped_data
-
-                # Compare User data if update is needed.
-                check_fields = ["fullname"]
-                update_dict = {}
-
-                for field in check_fields:
-                    if mapped_data.get(field):
-                        updated = (
-                            True if mapped_data[field][0] != user_dict[field] else False
-                        )
-                        if updated:
-                            update_dict[field] = mapped_data[field][0]
-
-                if update_dict:
-                    for item in update_dict:
-                        user_dict[item] = update_dict[item]
-                    tk.get_action("user_update")({"ignore_auth": True}, user_dict)
-                model.Session.commit()
-                log.info("User already created. Authorizing...")
-        else:
-            log.error(
-                'User mapping is empty, please set "ckan.saml_custom_attr_map" param in config.'
+            # Make sure that User ID is not already in saml2_user table
+            saml_user = (
+                model.Session.query(User)
+                .filter(User.id == new_user["id"])
+                .first()
             )
+            if saml_user:
+                log.debug(
+                    "Found existing row with such User ID, updating NAMEID..."
+                )
+                saml_user.name_id = nameid
+            else:
+                saml_user = User(
+                        id=new_user["id"],
+                        name_id=nameid,
+                        attributes=mapped_data,
+                )
+                model.Session.add(
+                    saml_user
+                )
+            model.Session.commit()
+            log.debug(log_message)
+            user = model.User.get(new_user["name"])
+        except Exception as e:
+            log.exception("Cannot create SAML2 user")
             return h.redirect_to(h.url_for("user.login"))
+    else:
+        user = model.User.get(saml_user.id)
 
-        # Roles and Organizations
-        for item in plugins.PluginImplementations(ICKANSAML):
-            item.roles_and_organizations(mapped_data, auth, user)
+    user_dict = user.as_dict()
+    saml_user.attributes = mapped_data
+
+    # Compare User data if update is needed.
+    check_fields = ["fullname"]
+    update_dict = {}
+
+    for field in check_fields:
+        if mapped_data.get(field):
+            updated = (
+                True if mapped_data[field][0] != user_dict[field] else False
+            )
+            if updated:
+                update_dict[field] = mapped_data[field][0]
+
+    if update_dict:
+        for item in update_dict:
+            user_dict[item] = update_dict[item]
+
+        tk.get_action("user_update")({"ignore_auth": True}, user_dict)
+    model.Session.commit()
+
+
+    # Roles and Organizations
+    for item in plugins.PluginImplementations(ICKANSAML):
+        item.roles_and_organizations(mapped_data, auth, user)
 
     session["samlUserdata"] = auth.get_attributes()
     session["samlNameIdFormat"] = auth.get_nameid_format()
