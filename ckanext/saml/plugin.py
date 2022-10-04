@@ -59,7 +59,7 @@ class SamlPlugin(plugins.SingletonPlugin):
 
     # IBlueprint
     def get_blueprint(self):
-        return [saml.saml]
+        return [saml.get_bp()]
 
     # IClick
     def get_commands(self):

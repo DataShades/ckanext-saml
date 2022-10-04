@@ -11,6 +11,7 @@ from ckan.common import config
 
 from ckanext.saml.model.user import User
 from ckanext.toolbelt.decorators import Collector
+from . import utils
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +23,22 @@ DEFAULT_USE_REMOTE_IDP = False
 DEFAULT_LOGIN_TEXT = "SAML Login"
 DEFAULT_FOLDER_PATH = "/etc/ckan/default/saml"
 
+CONFIG_SLO_ENABLED = "ckanext.saml.metadata.enable_slo"
+DEFAULT_SLO_ENABLED = False
+
 helper, get_helpers = Collector("saml").split()
+
+
+@helper
+def slo_enabled():
+    return tk.asbool(tk.config.get(CONFIG_SLO_ENABLED, DEFAULT_SLO_ENABLED))
+
+
+@helper
+def logout_url() -> str:
+    req = utils.prepare_from_flask_request()
+    auth = utils.make_auth(req)
+    return auth.logout()
 
 
 @helper
