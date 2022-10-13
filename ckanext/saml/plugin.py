@@ -40,7 +40,6 @@ class SamlPlugin(plugins.SingletonPlugin):
     # IAuthenticator
 
     def identify(self):
-
         if "samlCKANuser" not in session:
             return
 

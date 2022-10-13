@@ -26,7 +26,9 @@ def idp_refresh(context, data_dict):
 
     url = tk.config.get(CONFIG_URL)
     if not url:
-        raise tk.ObjectNotFound("Metadata URL is not configured: {}".format(CONFIG_URL))
+        raise tk.ObjectNotFound(
+            "Metadata URL is not configured: {}".format(CONFIG_URL)
+        )
     meta = Parser.parse_remote(url)
 
     cache = connect_to_redis()
@@ -40,7 +42,8 @@ def idp_show(context, data_dict):
     value = cache.get(_idp_key())
     if not value:
         raise tk.ObjectNotFound(
-            "No IdP details found. `ckanapi action saml_idp_refresh` may solve this problem"
+            "No IdP details found. `ckanapi action saml_idp_refresh` may solve"
+            " this problem"
         )
 
     return json.loads(value)

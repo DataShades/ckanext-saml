@@ -105,7 +105,9 @@ def settings() -> dict[str, Any]:
     settings = json.loads(settings_str)
 
     if tk.asbool(tk.config.get(CONFIG_USE_REMOTE_IDP, DEFAULT_USE_REMOTE_IDP)):
-        settings["idp"] = tk.get_action("saml_idp_show")({"ignore_auth": True}, {})
+        settings["idp"] = tk.get_action("saml_idp_show")(
+            {"ignore_auth": True}, {}
+        )
 
     settings.setdefault("custom_base_path", custom_folder)
     return settings

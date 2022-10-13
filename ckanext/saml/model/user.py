@@ -20,5 +20,7 @@ class User(Base):
 
     user = relationship(
         model.User,
-        backref=backref("saml2_user", uselist=False, cascade="all, delete-orphan"),
+        backref=backref(
+            "saml2_user", uselist=False, cascade="all, delete-orphan"
+        ),
     )

@@ -15,22 +15,30 @@ from sqlalchemy import func as sql_func
 
 from ckanext.saml.interfaces import ICKANSAML
 from ckanext.saml.model.user import User
-from ckanext.saml import utils
+from ckanext.saml import utils, config
 
-
-CONFIG_ERROR_TPL = "ckanext.saml.error_template"
 
 log = logging.getLogger(__name__)
 use_nameid_as_email = tk.config.get("ckan.saml_use_nameid_as_email", False)
 
-saml_details = ["samlUserdata", "samlNameIdFormat", "samlNameId", "samlCKANuser"]
+saml_details = [
+    "samlUserdata",
+    "samlNameIdFormat",
+    "samlNameId",
+    "samlCKANuser",
+]
 
 saml = Blueprint("saml", __name__)
 
 
 def get_bp():
     if tk.h.saml_slo_enabled():
-        saml.add_url_rule("/slo/post", view_func=post_logout)
+        saml.add_url_rule(config.slo_path(), view_func=post_logout)
+
+    saml.add_url_rule(
+        config.sso_path(), view_func=post_login, methods=["POST"]
+    )
+
     return saml
 
 
@@ -38,7 +46,6 @@ def post_logout():
     return tk.h.redirect_to("user.logout")
 
 
-@saml.route("/sso/post", methods=["POST"])
 def post_login():
     req = utils.prepare_from_flask_request()
     auth = utils.make_auth(req)
@@ -49,7 +56,7 @@ def post_login():
 
     if errors:
         log.error("{}".format(errors))
-        error_tpl = tk.config.get(CONFIG_ERROR_TPL)
+        error_tpl = config.error_template()
         if error_tpl:
             return tk.render(error_tpl, {"errors": errors})
 
@@ -61,10 +68,8 @@ def post_login():
 
     if not nameid:
         log.error(
-            (
-                "Something went wrong, no NAMEID was found, "
-                "redirecting back to to login page."
-            )
+            "Something went wrong, no NAMEID was found, "
+            "redirecting back to to login page."
         )
         return h.redirect_to(h.url_for("user.login"))
 
@@ -73,10 +78,10 @@ def post_login():
 
     if not attr_mapper:
         log.error(
-            'User mapping is empty, please set "ckan.saml_custom_attr_map" param in config.'
+            'User mapping is empty, please set "ckan.saml_custom_attr_map"'
+            " param in config."
         )
         return h.redirect_to(h.url_for("user.login"))
-
 
     for key, value in attr_mapper.items():
         field = auth.get_attribute(value)
@@ -89,14 +94,16 @@ def post_login():
     log.debug("Client data: %s", attr_mapper)
     log.debug("Mapped data: %s", mapped_data)
     log.debug(
-        "If you are experiencing login issues, make sure that email is present in the mapped data"
+        "If you are experiencing login issues, make sure that email is present"
+        " in the mapped data"
     )
-    saml_user = model.Session.query(User).filter(User.name_id == nameid).first()
+    saml_user = (
+        model.Session.query(User).filter(User.name_id == nameid).first()
+    )
 
     if not saml_user:
         log.debug(
-            "No User with NAMEID '{0}' was found. "
-            "Creating one.".format(nameid)
+            "No User with NAMEID '{0}' was found. Creating one.".format(nameid)
         )
 
         try:
@@ -124,7 +131,10 @@ def post_login():
                     )
                 )
                 new_user = user_exist.as_dict()
-                log_message = "User is being detected with such NameID, adding to Saml2 table..."
+                log_message = (
+                    "User is being detected with such NameID, adding to Saml2"
+                    " table..."
+                )
             else:
                 user_dict = {
                     "name": _get_random_username_from_email(email),
@@ -137,10 +147,8 @@ def post_login():
                 }
 
                 log.debug(
-                    (
-                        "Trying to create User with name '{0}'".format(
-                            user_dict["name"]
-                        )
+                    "Trying to create User with name '{0}'".format(
+                        user_dict["name"]
                     )
                 )
 
@@ -162,13 +170,11 @@ def post_login():
                 saml_user.name_id = nameid
             else:
                 saml_user = User(
-                        id=new_user["id"],
-                        name_id=nameid,
-                        attributes=mapped_data,
+                    id=new_user["id"],
+                    name_id=nameid,
+                    attributes=mapped_data,
                 )
-                model.Session.add(
-                    saml_user
-                )
+                model.Session.add(saml_user)
             model.Session.commit()
             log.debug(log_message)
             user = model.User.get(new_user["name"])
@@ -199,7 +205,6 @@ def post_login():
 
         tk.get_action("user_update")({"ignore_auth": True}, user_dict)
     model.Session.commit()
-
 
     # Roles and Organizations
     for item in plugins.PluginImplementations(ICKANSAML):
@@ -252,7 +257,9 @@ def saml_login():
         if tk.asbool(tk.request.args.get("sso")):
             saml_relaystate = tk.config.get("ckan.saml_relaystate", None)
             redirect = (
-                saml_relaystate if saml_relaystate else h.url_for("dashboard.index")
+                saml_relaystate
+                if saml_relaystate
+                else h.url_for("dashboard.index")
             )
             if tk.request.args.get("redirect"):
                 redirect = tk.request.args.get("redirect")
@@ -260,14 +267,14 @@ def saml_login():
             return h.redirect_to(auth.login(return_to=redirect))
         else:
             log.warning(
-                (
-                    "No arguments been provided in this URL. If you want to make "
-                    "auth request to SAML IdP point, please provide '?sso=true' at "
-                    "the end of the URL."
-                )
+                "No arguments been provided in this URL. If you want to make"
+                " auth request to SAML IdP point, please provide '?sso=true'"
+                " at the end of the URL."
             )
     except Exception as e:
-        h.flash_error("SAML: An issue appeared while validating settings file.")
+        h.flash_error(
+            "SAML: An issue appeared while validating settings file."
+        )
         log.error("{}".format(e))
 
     return h.redirect_to(h.url_for("user.login"))
