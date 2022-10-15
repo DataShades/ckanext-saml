@@ -32,8 +32,7 @@ saml = Blueprint("saml", __name__)
 
 
 def get_bp():
-    if tk.h.saml_slo_enabled():
-        saml.add_url_rule(config.slo_path(), view_func=post_logout)
+    saml.add_url_rule(config.slo_path(), view_func=post_logout)
 
     saml.add_url_rule(
         config.sso_path(), view_func=post_login, methods=["POST"]
@@ -43,6 +42,11 @@ def get_bp():
 
 
 def post_logout():
+    if "SAMLResponse" in tk.request.args:
+        log.debug(
+            "SAML2 Logout response: %s",
+            utils.decode_saml_response(tk.request.args["SAMLResponse"])
+        )
     return tk.h.redirect_to("user.logout")
 
 

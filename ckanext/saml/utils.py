@@ -4,7 +4,7 @@ import re
 from typing import Any
 from urllib.parse import urlparse
 
-from onelogin.saml2.auth import OneLogin_Saml2_Auth
+from onelogin.saml2.auth import OneLogin_Saml2_Auth, OneLogin_Saml2_Utils
 
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
@@ -75,3 +75,7 @@ def make_auth(req: dict[str, Any]) -> OneLogin_Saml2_Auth:
 
     custom_folder = tk.h.saml_folder_path()
     return Auth(req, custom_base_path=custom_folder)
+
+
+def decode_saml_response(response: str) -> bytes:
+    return OneLogin_Saml2_Utils.decode_base64_and_inflate(response)

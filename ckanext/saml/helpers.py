@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from typing import Any
+from typing import Any, Optional
 
 import ckan.model as model
 import ckan.plugins.toolkit as tk
@@ -23,22 +23,18 @@ DEFAULT_USE_REMOTE_IDP = False
 DEFAULT_LOGIN_TEXT = "SAML Login"
 DEFAULT_FOLDER_PATH = "/etc/ckan/default/saml"
 
-CONFIG_SLO_ENABLED = "ckanext.saml.metadata.enable_slo"
-DEFAULT_SLO_ENABLED = False
-
 helper, get_helpers = Collector("saml").split()
 
 
 @helper
-def slo_enabled():
-    return tk.asbool(tk.config.get(CONFIG_SLO_ENABLED, DEFAULT_SLO_ENABLED))
-
-
-@helper
-def logout_url() -> str:
+def logout_url(name_id: Optional[str] = None) -> str:
     req = utils.prepare_from_flask_request()
     auth = utils.make_auth(req)
-    return auth.logout()
+
+    return auth.logout(
+        return_to=tk.h.url_for("saml.post_logout", _external=True),
+        name_id=name_id,
+    )
 
 
 @helper
