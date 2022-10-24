@@ -7,21 +7,13 @@ from typing import Any, Optional
 
 import ckan.model as model
 import ckan.plugins.toolkit as tk
-from ckan.common import config
+
 
 from ckanext.saml.model.user import User
 from ckanext.toolbelt.decorators import Collector
-from . import utils
+from . import utils, config
 
 log = logging.getLogger(__name__)
-
-CONFIG_USE_REMOTE_IDP = "ckanext.saml.metadata.remote_idp"
-CONFIG_LOGIN_TEXT = "ckan.saml_login_button_text"
-CONFIG_FOLDER_PATH = "ckan.saml_custom_base_path"
-
-DEFAULT_USE_REMOTE_IDP = False
-DEFAULT_LOGIN_TEXT = "SAML Login"
-DEFAULT_FOLDER_PATH = "/etc/ckan/default/saml"
 
 helper, get_helpers = Collector("saml").split()
 
@@ -50,14 +42,12 @@ def is_saml_user(name: str) -> bool:
 
 @helper
 def login_button_text():
-    text = config.get(CONFIG_LOGIN_TEXT, DEFAULT_LOGIN_TEXT)
-    return text
+    return config.login_button_text()
 
 
 @helper
 def folder_path():
-    path = config.get(CONFIG_FOLDER_PATH, DEFAULT_FOLDER_PATH)
-    return path
+    return config.folder_path()
 
 
 @helper
@@ -69,7 +59,7 @@ def attr_mapper():
             "module.name",
             tk.h.saml_folder_path()
             + "/attributemaps/"
-            + config.get("ckan.saml_custom_attr_map", "mapper.py"),
+            + tk.config.get("ckan.saml_custom_attr_map", "mapper.py"),
         )
 
         mapper = importlib.util.module_from_spec(spec)
@@ -94,13 +84,14 @@ def settings() -> dict[str, Any]:
         settings_str = src.read()
 
     prefix = "ckanext.saml.settings.substitution."
+
     for k, v in tk.config.items():
         if not k.startswith(prefix):
             continue
         settings_str = settings_str.replace(f"<{k[len(prefix):]}>", v)
     settings = json.loads(settings_str)
 
-    if tk.asbool(tk.config.get(CONFIG_USE_REMOTE_IDP, DEFAULT_USE_REMOTE_IDP)):
+    if config.use_remote_idp():
         settings["idp"] = tk.get_action("saml_idp_show")(
             {"ignore_auth": True}, {}
         )

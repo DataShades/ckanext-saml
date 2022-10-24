@@ -10,19 +10,7 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
 
 from .interfaces import ICKANSAML
-
-
-CONFIG_HTTPS = "ckan.saml_use_https"
-DEFAULT_HTTPS = "off"
-
-CONFIG_DYNAMIC = "ckanext.saml.settings.dynamic"
-DEFAULT_DYNAMIC = False
-
-CONFIG_USE_FORWARDED_HOST = "ckanext.saml.use_forwarded_host"
-DEFAULT_USE_FORWARDED_HOST = False
-
-CONFIG_STATIC_HOST = "ckanext.saml.static_host"
-DEFAULT_STATIC_HOST = None
+from . import config
 
 
 def prepare_from_flask_request() -> dict[str, Any]:
@@ -37,23 +25,16 @@ def prepare_from_flask_request() -> dict[str, Any]:
             req_path = root_path + req_path
 
     host = tk.request.host
-    static_host = tk.config.get(CONFIG_STATIC_HOST, DEFAULT_STATIC_HOST)
+    static_host = config.static_host()
     forwarded_host = tk.request.environ.get("HTTP_X_FORWARDED_HOST")
 
-    if (
-        tk.asbool(
-            tk.config.get(
-                CONFIG_USE_FORWARDED_HOST, DEFAULT_USE_FORWARDED_HOST
-            )
-        )
-        and forwarded_host
-    ):
+    if config.use_forwarded_host() and forwarded_host:
         host = forwarded_host
     elif static_host:
         host = static_host
 
     return {
-        "https": tk.config.get(CONFIG_HTTPS, DEFAULT_HTTPS),
+        "https": config.https(),
         "http_host": host,
         "server_port": url_data.port,
         "script_name": req_path,
@@ -70,7 +51,7 @@ def make_auth(req: dict[str, Any]) -> OneLogin_Saml2_Auth:
     else:
         Auth = OneLogin_Saml2_Auth
 
-    if tk.asbool(tk.config.get(CONFIG_DYNAMIC, DEFAULT_DYNAMIC)):
+    if config.use_dynamic_config():
         return Auth(req, old_settings=tk.h.saml_settings())
 
     custom_folder = tk.h.saml_folder_path()
