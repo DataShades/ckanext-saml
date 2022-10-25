@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/DataShades/ckanext-saml/compare/v0.1.5...v0.1.6) (2022-10-25)
+
+
+### Features
+
+* Allow login without sso URL parameter ([3d78e2a](https://github.com/DataShades/ckanext-saml/commit/3d78e2ad5391575c5d76d6c936b07ba639e2c3d9))
+
 ### [0.1.5](https://github.com/DataShades/ckanext-saml/compare/v0.1.4...v0.1.5) (2022-10-24)
 
 
