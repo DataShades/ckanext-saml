@@ -23,6 +23,9 @@ DEFAULT_STATIC_HOST = None
 CONFIG_USE_FORWARDED_HOST = "ckanext.saml.use_forwarded_host"
 DEFAULT_USE_FORWARDED_HOST = False
 
+CONFIG_UNCONDITIONAL_LOGIN = "ckanext.saml.unconditional_login"
+DEFAULT_UNCONDITIONAL_LOGIN = False
+
 CONFIG_LOGIN_TEXT = "ckanext.saml.login_button_text"
 LEGACY_CONFIG_LOGIN_TEXT = "ckan.saml_login_button_text"
 DEFAULT_LOGIN_TEXT = "SAML Login"
@@ -68,6 +71,13 @@ def use_remote_idp() -> bool:
 def use_dynamic_config() -> bool:
     return tk.asbool(tk.config.get(CONFIG_DYNAMIC, DEFAULT_DYNAMIC))
 
+
+def unconditional_login() -> bool:
+    return tk.asbool(
+            tk.config.get(
+                CONFIG_UNCONDITIONAL_LOGIN, DEFAULT_UNCONDITIONAL_LOGIN
+            )
+        )
 
 def use_forwarded_host() -> bool:
     return tk.asbool(

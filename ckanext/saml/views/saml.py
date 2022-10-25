@@ -258,7 +258,7 @@ def saml_login():
     try:
         auth = utils.make_auth(req)
 
-        if tk.asbool(tk.request.args.get("sso")):
+        if tk.asbool(tk.request.args.get("sso")) or config.unconditional_login():
             saml_relaystate = tk.config.get("ckan.saml_relaystate", None)
             redirect = (
                 saml_relaystate
