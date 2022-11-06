@@ -3,6 +3,7 @@ import ckan.plugins.toolkit as tk
 import pytest
 
 import ckanext.saml.helpers as h
+from ckanext.saml import config
 from ckanext.saml.model.user import User
 
 
@@ -18,19 +19,19 @@ def test_is_saml_user(user):
 
 @pytest.mark.usefixtures("with_plugins")
 def test_login_button_text(ckan_config, monkeypatch, faker):
-    assert tk.h.saml_login_button_text() == h.DEFAULT_LOGIN_TEXT
+    assert tk.h.saml_login_button_text() == config.DEFAULT_LOGIN_TEXT
 
     label = faker.sentence()
-    monkeypatch.setitem(ckan_config, h.CONFIG_LOGIN_TEXT, label)
+    monkeypatch.setitem(ckan_config, config.CONFIG_LOGIN_TEXT, label)
     assert tk.h.saml_login_button_text() == label
 
 
 @pytest.mark.usefixtures("with_plugins")
 def test_folder_path(ckan_config, monkeypatch, faker):
-    assert tk.h.saml_folder_path() == h.DEFAULT_FOLDER_PATH
+    assert tk.h.saml_folder_path() == config.DEFAULT_FOLDER_PATH
 
     path = faker.file_path()
-    monkeypatch.setitem(ckan_config, h.CONFIG_FOLDER_PATH, path)
+    monkeypatch.setitem(ckan_config, config.CONFIG_FOLDER_PATH, path)
     assert tk.h.saml_folder_path() == path
 
 
