@@ -30,12 +30,20 @@ CONFIG_LOGIN_TEXT = "ckanext.saml.login_button_text"
 LEGACY_CONFIG_LOGIN_TEXT = "ckan.saml_login_button_text"
 DEFAULT_LOGIN_TEXT = "SAML Login"
 
+CONFIG_REACTIVATE = "ckanext.saml.reactivate_deleted_account"
+DEFAULT_REACTIVATE = False
+
 CONFIG_FOLDER_PATH = "ckanext.saml.metadata.base_path"
 LEGACY_CONFIG_FOLDER_PATH = "ckan.saml_custom_base_path"
 DEFAULT_FOLDER_PATH = "/etc/ckan/default/saml"
 
 CONFIG_HTTPS = "ckan.saml_use_https"
 DEFAULT_HTTPS = "off"
+
+
+def reactivate_deleted_account() -> bool:
+    return tk.asbool(tk.config.get(CONFIG_REACTIVATE, DEFAULT_REACTIVATE))
+
 
 def sso_path() -> str:
     return tk.config.get(CONFIG_SSO_PATH, DEFAULT_SSO_PATH)
