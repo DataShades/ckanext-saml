@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.7](https://github.com/DataShades/ckanext-saml/compare/v0.1.6...v0.1.7) (2022-11-09)
+
+
+### Bug Fixes
+
+* configurable redirect after login ([bfea66b](https://github.com/DataShades/ckanext-saml/commit/bfea66b17ed8398108ba1f82279f6a280063d18e))
+
 ### [0.1.6](https://github.com/DataShades/ckanext-saml/compare/v0.1.5...v0.1.6) (2022-10-25)
 
 
