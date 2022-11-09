@@ -226,8 +226,7 @@ def post_login():
         log.info('Redirecting to "{0}"'.format(req["post_data"]["RelayState"]))
         return h.redirect_to(req["post_data"]["RelayState"])
 
-    return h.redirect_to(h.url_for("dashboard.index"))
-
+    return tk.redirect_to(tk.config.get('ckan.route_after_login', 'dashboard.index'))
 
 @saml.route("/saml/metadata")
 def metadata():
