@@ -124,7 +124,6 @@ def post_login():
                 .filter(
                     sql_func.lower(model.User.email) == sql_func.lower(email)
                 )
-                .filter(model.User.state == "active")
                 .first()
             )
 
@@ -167,6 +166,7 @@ def post_login():
                 .filter(User.id == new_user["id"])
                 .first()
             )
+
             if saml_user:
                 log.debug(
                     "Found existing row with such User ID, updating NAMEID..."
@@ -206,11 +206,21 @@ def post_login():
     if user_dict["state"] == "deleted":
         if config.reactivate_deleted_account():
             update_dict["state"] = "active"
-        else:
-            h.flash_error(
-                "Your account was deleted. Please, contact the administrator if you want to restore it"
+            log.debug(
+                "Restore deleted user %s",
+                user_dict["name"]
             )
-            return h.redirect_to(h.url_for("user.login"))
+
+        else:
+            log.warning(
+                "Blocked login attempt for deleted user %s",
+                user_dict["name"]
+            )
+
+            h.flash_error(
+                tk._("Your account was deleted. Please, contact the administrator if you want to restore it")
+            )
+            return tk.abort(403)
 
     if update_dict:
         for item in update_dict:
