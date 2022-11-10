@@ -203,6 +203,15 @@ def post_login():
             if updated:
                 update_dict[field] = mapped_data[field][0]
 
+    if user_dict["state"] == "deleted":
+        if config.reactivate_deleted_account():
+            update_dict["state"] = "active"
+        else:
+            h.flash_error(
+                "Your account was deleted. Please, contact the administrator if you want to restore it"
+            )
+            return h.redirect_to(h.url_for("user.login"))
+
     if update_dict:
         for item in update_dict:
             user_dict[item] = update_dict[item]

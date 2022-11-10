@@ -4,12 +4,19 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.1.8](https://github.com/DataShades/ckanext-saml/compare/v0.1.7...v0.1.8) (2022-11-09)
 
+
+### Features
+
+* configurable redirect after login ([bfea66b](https://github.com/DataShades/ckanext-saml/commit/bfea66b17ed8398108ba1f82279f6a280063d18e))
+
+
 ### [0.1.7](https://github.com/DataShades/ckanext-saml/compare/v0.1.6...v0.1.7) (2022-11-09)
 
 
 ### Bug Fixes
 
-* configurable redirect after login ([bfea66b](https://github.com/DataShades/ckanext-saml/commit/bfea66b17ed8398108ba1f82279f6a280063d18e))
+* reactivate deleted accounts ([7ae982d](https://github.com/DataShades/ckanext-saml/commit/7ae982d91923696fbe96179ea00f850736235b14))
+
 
 ### [0.1.6](https://github.com/DataShades/ckanext-saml/compare/v0.1.5...v0.1.6) (2022-10-25)
 
