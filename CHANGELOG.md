@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/DataShades/ckanext-saml/compare/v0.1.8...v0.2.0) (2022-11-10)
+
+
+### Bug Fixes
+
+* additional fixes for handling removed users ([421c948](https://github.com/DataShades/ckanext-saml/commit/421c948e4ae13132dd9ea5dcc95a960c271d043c))
+* reactivate deleted accounts ([7ae982d](https://github.com/DataShades/ckanext-saml/commit/7ae982d91923696fbe96179ea00f850736235b14))
+* use came_from ([1c768cc](https://github.com/DataShades/ckanext-saml/commit/1c768cc3b6ad95a703046170a69f835a25b8e182))
+
 ### [0.1.8](https://github.com/DataShades/ckanext-saml/compare/v0.1.7...v0.1.8) (2022-11-09)
 
 
