@@ -235,8 +235,7 @@ def post_login():
         log.info('Redirecting to "{0}"'.format(req["post_data"]["RelayState"]))
         return h.redirect_to(req["post_data"]["RelayState"])
 
-    return h.redirect_to(h.url_for("dashboard.index"))
-
+    return tk.redirect_to(_destination())
 
 @saml.route("/saml/metadata")
 def metadata():
@@ -272,7 +271,7 @@ def saml_login():
             redirect = (
                 saml_relaystate
                 if saml_relaystate
-                else h.url_for("dashboard.index")
+                else _destination()
             )
             if tk.request.args.get("redirect"):
                 redirect = tk.request.args.get("redirect")
@@ -291,3 +290,9 @@ def saml_login():
         log.error("{}".format(e))
 
     return h.redirect_to(h.url_for("user.login"))
+
+
+def _destination() -> str:
+    dynamic = tk.request.args.get('came_from', '')
+    static = tk.config.get('ckan.route_after_login', 'dashboard.index')
+    return dynamic or static
