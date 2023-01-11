@@ -19,7 +19,9 @@ from ckanext.saml import utils, config
 
 
 log = logging.getLogger(__name__)
-use_nameid_as_email = tk.config.get("ckan.saml_use_nameid_as_email", False)
+use_nameid_as_email = tk.asbool(
+    tk.config.get("ckan.saml_use_nameid_as_email", False)
+)
 
 saml_details = [
     "samlUserdata",
@@ -111,10 +113,11 @@ def post_login():
         )
 
         try:
-            if use_nameid_as_email:
-                email = nameid
-            else:
-                email = mapped_data["email"][0]
+            email = (
+                nameid
+                if config.use_nameid_as_email()
+                else mapped_data["email"][0]
+            )
 
             log.debug(
                 'Check if User with "{0}" email already exists.'.format(email)

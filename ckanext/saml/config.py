@@ -40,6 +40,9 @@ DEFAULT_FOLDER_PATH = "/etc/ckan/default/saml"
 CONFIG_HTTPS = "ckan.saml_use_https"
 DEFAULT_HTTPS = "off"
 
+CONFIG_USE_NAMEID_AS_EMAIL = "ckan.saml_use_nameid_as_email"
+DEFAULT_USE_NAMEID_AS_EMAIL = False
+
 
 def reactivate_deleted_account() -> bool:
     return tk.asbool(tk.config.get(CONFIG_REACTIVATE, DEFAULT_REACTIVATE))
@@ -74,7 +77,10 @@ def folder_path() -> str:
 
 
 def use_remote_idp() -> bool:
-    return tk.asbool(tk.config.get(CONFIG_USE_REMOTE_IDP, DEFAULT_USE_REMOTE_IDP))
+    return tk.asbool(
+        tk.config.get(CONFIG_USE_REMOTE_IDP, DEFAULT_USE_REMOTE_IDP)
+    )
+
 
 def use_dynamic_config() -> bool:
     return tk.asbool(tk.config.get(CONFIG_DYNAMIC, DEFAULT_DYNAMIC))
@@ -82,20 +88,25 @@ def use_dynamic_config() -> bool:
 
 def unconditional_login() -> bool:
     return tk.asbool(
-            tk.config.get(
-                CONFIG_UNCONDITIONAL_LOGIN, DEFAULT_UNCONDITIONAL_LOGIN
-            )
-        )
+        tk.config.get(CONFIG_UNCONDITIONAL_LOGIN, DEFAULT_UNCONDITIONAL_LOGIN)
+    )
+
 
 def use_forwarded_host() -> bool:
     return tk.asbool(
-            tk.config.get(
-                CONFIG_USE_FORWARDED_HOST, DEFAULT_USE_FORWARDED_HOST
-            )
-        )
+        tk.config.get(CONFIG_USE_FORWARDED_HOST, DEFAULT_USE_FORWARDED_HOST)
+    )
+
 
 def static_host() -> Optional[str]:
     return tk.config.get(CONFIG_STATIC_HOST, DEFAULT_STATIC_HOST)
 
+
 def https() -> str:
     return tk.config.get(CONFIG_HTTPS, DEFAULT_HTTPS)
+
+
+def use_nameid_as_email() -> bool:
+    return tk.asbool(
+        tk.config.get(CONFIG_USE_NAMEID_AS_EMAIL, DEFAULT_USE_NAMEID_AS_EMAIL)
+    )
