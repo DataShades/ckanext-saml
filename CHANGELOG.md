@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.1](https://github.com/DataShades/ckanext-saml/compare/v0.2.0...v0.2.1) (2023-02-02)
+
+
+### Bug Fixes
+
+* treat `ckan.saml_use_nameid_as_email` as bool ([282cbf1](https://github.com/DataShades/ckanext-saml/commit/282cbf19430bd1873ec15fddfa7f9ffe1d8197e5))
+
 ## [0.2.0](https://github.com/DataShades/ckanext-saml/compare/v0.1.8...v0.2.0) (2022-11-10)
 
 
