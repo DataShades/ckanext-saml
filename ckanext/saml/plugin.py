@@ -10,15 +10,12 @@ from ckanext.saml.cli import get_commnads
 from ckanext.saml.helpers import get_helpers
 from ckanext.saml.logic.action import get_actions
 from ckanext.saml.views import saml
-
-CONFIG_TTL = "ckanext.saml.session.ttl"
-DEFAULT_TTL = 30 * 24 * 3600
+import ckanext.saml.config as config
 
 
 class SamlPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IActions)
     plugins.implements(plugins.IConfigurer)
-    plugins.implements(plugins.IAuthenticator, inherit=True)
     plugins.implements(plugins.IBlueprint)
     plugins.implements(plugins.IClick)
     plugins.implements(plugins.ITemplateHelpers)
@@ -37,24 +34,28 @@ class SamlPlugin(plugins.SingletonPlugin):
     def get_helpers(self):
         return get_helpers()
 
-    # IAuthenticator
+    if not tk.check_ckan_version("2.10"):
+        # specifically for ckan 2.9 and lower versions
+        plugins.implements(plugins.IAuthenticator, inherit=True)
+        # IAuthenticator
 
-    def identify(self):
-        if "samlCKANuser" not in session:
-            return
+        def identify(self):
+            if "samlCKANuser" not in session:
+                return
 
-        now = datetime.utcnow()
-        last_login = session.get("samlLastLogin", now)
-        diff = now - last_login
+            now = datetime.utcnow()
+            last_login = session.get("samlLastLogin", now)
+            diff = now - last_login
 
-        ttl = tk.asint(tk.config.get(CONFIG_TTL, DEFAULT_TTL))
-        if diff < timedelta(seconds=ttl):
-            tk.g.user = session["samlCKANuser"]
+            ttl = tk.asint(tk.config.get(
+                config.CONFIG_TTL, config.DEFAULT_TTL))
+            if diff < timedelta(seconds=ttl):
+                tk.g.user = session["samlCKANuser"]
 
-    def logout(self):
-        if "samlNameId" in session:
-            for key in saml.saml_details:
-                del session[key]
+        def logout(self):
+            if "samlNameId" in session:
+                for key in saml.saml_details:
+                    del session[key]
 
     # IBlueprint
     def get_blueprint(self):

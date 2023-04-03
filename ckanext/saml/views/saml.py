@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import ckan.lib.helpers as h
 import ckan.model as model
@@ -236,13 +236,20 @@ def post_login():
     for item in plugins.PluginImplementations(ICKANSAML):
         item.roles_and_organizations(mapped_data, auth, user)
 
-    session["samlUserdata"] = auth.get_attributes()
-    session["samlNameIdFormat"] = auth.get_nameid_format()
-    session["samlNameId"] = nameid
-    session["samlCKANuser"] = user.name
-    session["samlLastLogin"] = datetime.utcnow()
 
-    tk.g.user = user.name
+    if tk.check_ckan_version("2.10"):
+        duration_time = timedelta(milliseconds=int(tk.config.get(
+                config.CONFIG_TTL, config.DEFAULT_TTL)))
+
+        tk.login_user(user, duration=duration_time)
+    else:
+        session["samlUserdata"] = auth.get_attributes()
+        session["samlNameIdFormat"] = auth.get_nameid_format()
+        session["samlNameId"] = nameid
+        session["samlCKANuser"] = user.name
+        session["samlLastLogin"] = datetime.utcnow()
+
+        tk.g.user = user.name
 
     if "RelayState" in req["post_data"] and req["post_data"]["RelayState"]:
         log.info('Redirecting to "{0}"'.format(req["post_data"]["RelayState"]))
