@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/DataShades/ckanext-saml/compare/v0.2.1...v0.3.0) (2023-04-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* CKAN v2.10 support
+
+### Features
+
+* CKAN v2.10 support ([6f0fb3d](https://github.com/DataShades/ckanext-saml/commit/6f0fb3d1a0a07eb842e24d9cae78d8561d8f5084))
+
 ### [0.2.1](https://github.com/DataShades/ckanext-saml/compare/v0.2.0...v0.2.1) (2023-02-02)
 
 
