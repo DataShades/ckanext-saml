@@ -43,6 +43,8 @@ DEFAULT_HTTPS = "off"
 CONFIG_USE_NAMEID_AS_EMAIL = "ckan.saml_use_nameid_as_email"
 DEFAULT_USE_NAMEID_AS_EMAIL = False
 
+CONFIG_TTL = "ckanext.saml.session.ttl"
+DEFAULT_TTL = 30 * 24 * 3600
 
 def reactivate_deleted_account() -> bool:
     return tk.asbool(tk.config.get(CONFIG_REACTIVATE, DEFAULT_REACTIVATE))
