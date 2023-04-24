@@ -2,6 +2,7 @@
 {% set is_saml_user = h.saml_is_saml_user(g.user) %}
 
 <form id="user-edit-form" class="dataset-form" method="post" action="{{ action }}" enctype="multipart/form-data">
+    {{ h.csrf_input() if "csrf_input" in h }}
     {{ form.errors(error_summary) }}
 
     <fieldset>
