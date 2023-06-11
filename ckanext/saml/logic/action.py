@@ -39,11 +39,8 @@ def idp_refresh(context, data_dict):
 def idp_show(context, data_dict):
     tk.check_access("sysadmin", context, data_dict)
     cache = connect_to_redis()
-    value = cache.get(_idp_key())
-    if not value:
-        raise tk.ObjectNotFound(
-            "No IdP details found. `ckanapi action saml_idp_refresh` may solve"
-            " this problem"
-        )
 
-    return json.loads(value)
+    if value := cache.get(_idp_key()):
+        return json.loads(value)
+
+    return tk.get_action("saml_idp_refresh")(context, data_dict)
