@@ -6,8 +6,6 @@ Create Date: 2022-07-26 15:01:52.311445
 
 """
 from alembic import op
-import sqlalchemy as sa
-
 
 # revision identifiers, used by Alembic.
 revision = "25dc326c059e"
@@ -17,15 +15,13 @@ depends_on = None
 
 
 def upgrade():
-    op.get_context().connection.execute(
-        """
+    op.get_context().connection.execute("""
     DELETE FROM saml2_user
     WHERE id IN (
         SELECT s.id FROM saml2_user s
         LEFT JOIN "user" u ON u.id = s.id
         WHERE u.id IS NULL
-    )"""
-    )
+    )""")
 
     op.create_foreign_key(
         "saml2_user_id_fkey",

@@ -1,6 +1,6 @@
 {% ckan_extends %}
 
 {% block form %}
-	<a href="{{  h.url_for('saml.saml_login', sso='true') }}" class="btn btn-primary">{{ h.saml_login_button_text() }}</a>
+	<a href="{{  h.url_for('saml.saml_login', sso='true') }}" class="btn btn-primary">{{ h.saml_get_login_button_text() }}</a>
 	{{ super() }}
 {% endblock %}

@@ -105,21 +105,15 @@ settings.json and IdP APP, otherwise errors might appear.
   as an email for the User in order not to claim it additionally from the
   IdP. Default is set to ``false``.
 
-- ``ckan.saml_login_button_text`` - Provides an ability to customize login
+- ``ckanext.saml.login_button_text`` - Provides an ability to customize login
   button text. By **default** set to ``SAML Login``.
 
-- ``ckan.saml_custom_base_path`` - Provides custom path where saml
-  files/folders will be searched. By **default** set to
-  ``/etc/ckan/default/saml``.
-
-- ``ckan.saml_custom_attr_map`` - Used to modify mapper filename. By
-  **default** searches for ``mapper.py``.
-
-- ``ckan.saml_use_root_path`` - This needs to be set to ``true`` if you run
+- ``ckanext.saml.use_root_path`` - This needs to be set to ``true`` if you run
   your portal using the ``ckan.root_path``. By **default** set to ``false``.
 
-- ``ckan.saml_relaystate`` - Set a custom RelayState ``path``. By **default**
-  set to ``/dashboard``.
+- ``ckanext.saml.relay_state`` - The destination that the user will be redirected
+    to after they have completed the authentication process at the identity
+    provider (IdP). By **default** it's either ``came_from`` or ``/dashboard``.
 
 #### SP Metadata file ####
 

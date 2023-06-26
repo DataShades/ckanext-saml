@@ -1,46 +1,41 @@
 import json
 
+from onelogin.saml2.idp_metadata_parser import \
+    OneLogin_Saml2_IdPMetadataParser as Parser
+
 import ckan.plugins.toolkit as tk
 from ckan.lib.redis import connect_to_redis
-from onelogin.saml2.idp_metadata_parser import (
-    OneLogin_Saml2_IdPMetadataParser as Parser,
-)
 
-CONFIG_URL = "ckanext.saml.metadata.url"
+from ckanext.saml import config
 
 
-def get_actions():
-    return {
-        "saml_idp_refresh": idp_refresh,
-        "saml_idp_show": idp_show,
-    }
-
-
-def _idp_key():
-    site_id = tk.config["ckan.site_id"]
-    return "ckan:{}:saml:idp".format(site_id)
-
-
-def idp_refresh(context, data_dict):
+def saml_idp_refresh(context, data_dict):
+    """Refresh the IDP metadata from the remote source"""
     tk.check_access("sysadmin", context, data_dict)
 
-    url = tk.config.get(CONFIG_URL)
-    if not url:
-        raise tk.ObjectNotFound(
-            "Metadata URL is not configured: {}".format(CONFIG_URL)
-        )
-    meta = Parser.parse_remote(url)
+    metadata_url = config.get_remote_idp_metadata_url()
 
-    cache = connect_to_redis()
-    cache.set(_idp_key(), json.dumps(meta["idp"]))
+    if not metadata_url:
+        raise tk.ObjectNotFound("Metadata URL is not configured")
+
+    meta = Parser.parse_remote(metadata_url)
+
+    conn = connect_to_redis()
+    conn.set(_get_redis_idp_key(), json.dumps(meta["idp"]))
     return meta["idp"]
 
 
-def idp_show(context, data_dict):
-    tk.check_access("sysadmin", context, data_dict)
-    cache = connect_to_redis()
+def _get_redis_idp_key():
+    return "ckan:{}:saml:idp".format(tk.config["ckan.site_id"])
 
-    if value := cache.get(_idp_key()):
+
+def saml_idp_show(context, data_dict):
+    """Return the cached IDP metadata info from Redis if it's here. Otherwise,
+    perform an idp_refresh to fetch it from remote and return"""
+    tk.check_access("sysadmin", context, data_dict)
+    conn = connect_to_redis()
+
+    if value := conn.get(_get_redis_idp_key()):
         return json.loads(value)
 
     return tk.get_action("saml_idp_refresh")(context, data_dict)

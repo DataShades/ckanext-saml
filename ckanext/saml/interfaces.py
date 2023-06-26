@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from typing import Optional
 
-from ckan.plugins import Interface
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
+
+from ckan.plugins import Interface
 
 
 class ICKANSAML(Interface):

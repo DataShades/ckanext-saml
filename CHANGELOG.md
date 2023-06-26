@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+### [1.0.0](https://github.com/DataShades/ckanext-saml/compare/v0.3.1...v1.0.0) (2023-06-20)
+* drop support CKAN lower than 2.10.0
+* drop `settings.json` and `mapping.py` support. Instead, use `ckanext.saml.mapping.`
+and `ckanext.saml.settings.` dynamic config options to declare SAML settings or
+attribute mapping.
+
+
 ### [0.3.1](https://github.com/DataShades/ckanext-saml/compare/v0.3.0...v0.3.1) (2023-04-24)
 
 

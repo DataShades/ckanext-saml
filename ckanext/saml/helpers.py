@@ -1,25 +1,20 @@
 from __future__ import annotations
 
-import json
 import logging
-import os
 from typing import Any, Optional
+
+from onelogin.saml2.auth import OneLogin_Saml2_Settings as SAMLSettings
 
 import ckan.model as model
 import ckan.plugins.toolkit as tk
 
-
+from ckanext.saml import config, const, utils
 from ckanext.saml.model.user import User
-from ckanext.toolbelt.decorators import Collector
-from . import utils, config
 
 log = logging.getLogger(__name__)
 
-helper, get_helpers = Collector("saml").split()
 
-
-@helper
-def logout_url(name_id: Optional[str] = None) -> str:
+def saml_logout_url(name_id: Optional[str] = None) -> str:
     req = utils.prepare_from_flask_request()
     auth = utils.make_auth(req)
 
@@ -29,8 +24,7 @@ def logout_url(name_id: Optional[str] = None) -> str:
     )
 
 
-@helper
-def is_saml_user(name: str) -> bool:
+def saml_is_saml_user(name: str) -> bool:
     user = model.User.get(name)
     if not user:
         return False
@@ -40,61 +34,89 @@ def is_saml_user(name: str) -> bool:
     ).scalar()
 
 
-@helper
-def login_button_text():
-    return config.login_button_text()
+def saml_get_login_button_text():
+    return config.get_login_button_text()
 
 
-@helper
-def folder_path():
-    return config.folder_path()
+def saml_get_attribute_mapper() -> dict[str, str]:
+    """Return a SAML user attributes mapping. If the custom mapping is not
+    enabled, use default mapping."""
+    if not config.use_custom_mapper():
+        return const.DEFAULT_MAPPING
 
+    mapping: dict[str, str] = {}
 
-@helper
-def attr_mapper():
-    import importlib.util
-
-    try:
-        spec = importlib.util.spec_from_file_location(
-            "module.name",
-            tk.h.saml_folder_path()
-            + "/attributemaps/"
-            + tk.config.get("ckan.saml_custom_attr_map", "mapper.py"),
-        )
-
-        mapper = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mapper)
-    except Exception as e:
-        log.error("{0}".format(e))
-        return None
-
-    return mapper.MAP
-
-
-@helper
-def settings() -> dict[str, Any]:
-    custom_folder = tk.h.saml_folder_path()
-
-    filepath = os.path.join(custom_folder, "settings.json")
-    if not os.path.exists(filepath):
-        log.warning("SAML2 settings file not found: %s", filepath)
-        return {}
-
-    with open(filepath) as src:
-        settings_str = src.read()
-
-    prefix = "ckanext.saml.settings.substitution."
+    prefix = const.MAPPING_PREFIX
 
     for k, v in tk.config.items():
         if not k.startswith(prefix):
             continue
-        settings_str = settings_str.replace(f"<{k[len(prefix):]}>", v)
-    settings = json.loads(settings_str)
 
-    if config.use_remote_idp():
-        settings["idp"] = tk.get_action("saml_idp_show")(
-            {"ignore_auth": True}, {}
-        )
+        mapping[k[len(prefix) :]] = v
 
-    settings.setdefault("custom_base_path", custom_folder)
+    return mapping
+
+
+def saml_get_settings() -> SAMLSettings:
+    """Prepare a SAML settings. Fill a settings with a default values before,
+    then update it if an option is declared."""
+
+    return SAMLSettings(settings=_parse_settings())
+
+
+def _parse_settings():
+    settings = _get_default_sp_settings()
+
+    prefix = const.SETTINGS_PREFIX
+
+    for k, v in tk.config.items():
+        if not k.startswith(prefix):
+            continue
+
+        keys = list(enumerate(k[len(prefix) :].split(".")))
+        nested_dict = settings
+
+        for idx, key in keys:
+            is_last_key = keys[-1] == (idx, key)
+            value: str | dict[str, Any] = v if is_last_key else {}
+
+            if not is_last_key:
+                nested_dict.setdefault(key, value)
+            else:
+                nested_dict[key] = value
+
+            nested_dict = nested_dict[key]
+
+    if config.get_remote_idp_metadata_url():
+        settings["idp"] = _get_remote_idp_settings()
+
     return settings
+
+
+def _get_default_sp_settings() -> dict[str, Any]:
+    """Since SP is our CKAN instance, we can assume, that user could use it
+    with a default values"""
+
+    return {
+        "strict": True,
+        "debug": True,
+        "sp": {
+            "entityId": tk.config["ckan.site_url"],
+            "assertionConsumerService": {
+                "url": tk.url_for("saml.post_login", _external=True),
+                "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
+            },
+            "singleLogoutService": {
+                "url": tk.url_for("saml.post_logout", _external=True),
+                "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+            },
+            "NameIDFormat": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
+            "x509cert": "",
+            "privateKey": "",
+        },
+        "idp": {},
+    }
+
+
+def _get_remote_idp_settings() -> dict[str, Any]:
+    return tk.get_action("saml_idp_show")({"ignore_auth": True}, {})

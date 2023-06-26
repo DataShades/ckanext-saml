@@ -1,0 +1,59 @@
+version: 1
+groups:
+  - annotation: ckanext-saml
+    options:
+      - key: ckanext.saml.settings.<OPT>
+        type: dynamic
+        example: "ckanext.saml.settings.strict = false"
+        description: Defining a configuration for a SAML
+
+      - key: ckanext.saml.mapping.<OPT>
+        type: dynamic
+        example: "ckanext.saml.mapping.user_id = uid"
+        description: Allow you to map the IDP user attributes
+
+      - key: ckanext.saml.error_template
+        description: Path to custom template to render error on login issue.
+
+      - key: ckanext.saml.sso_path
+        default: /sso/post
+
+      - key: ckanext.saml.slo_path
+        default: /slo/post
+
+      - key: ckanext.saml.static_host
+        default: None
+
+      - key: ckanext.saml.use_forwarded_host
+        type: bool
+        default: False
+
+      - key: ckanext.saml.unconditional_login
+        type: bool
+        default: False
+
+      - key: ckanext.saml.login_button_text
+        default: "SAML Login"
+        description: Login button text
+
+      - key: ckanext.saml.reactivate_deleted_account
+        type: bool
+        default: False
+
+      - key: ckanext.saml.use_https
+        type: bool
+        default: False
+        description: Use "true" to use https in a SAML request
+
+      - key: ckanext.saml.use_nameid_as_email
+        type: bool
+        default: False
+
+      - key: ckanext.saml.use_root_path
+        type: bool
+        default: False
+
+      - key: ckanext.saml.session.ttl
+        type: int
+        default: 2592000
+        description: The amount of time in seconds before the remember cookie expires.

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import Optional
 
 import ckan.plugins.toolkit as tk
@@ -11,12 +12,6 @@ DEFAULT_SSO_PATH = "/sso/post"
 CONFIG_SLO_PATH = "ckanext.saml.slo_path"
 DEFAULT_SLO_PATH = "/slo/post"
 
-CONFIG_DYNAMIC = "ckanext.saml.settings.dynamic"
-DEFAULT_DYNAMIC = False
-
-CONFIG_USE_REMOTE_IDP = "ckanext.saml.metadata.remote_idp"
-DEFAULT_USE_REMOTE_IDP = False
-
 CONFIG_STATIC_HOST = "ckanext.saml.static_host"
 DEFAULT_STATIC_HOST = None
 
@@ -27,68 +22,54 @@ CONFIG_UNCONDITIONAL_LOGIN = "ckanext.saml.unconditional_login"
 DEFAULT_UNCONDITIONAL_LOGIN = False
 
 CONFIG_LOGIN_TEXT = "ckanext.saml.login_button_text"
-LEGACY_CONFIG_LOGIN_TEXT = "ckan.saml_login_button_text"
 DEFAULT_LOGIN_TEXT = "SAML Login"
 
 CONFIG_REACTIVATE = "ckanext.saml.reactivate_deleted_account"
 DEFAULT_REACTIVATE = False
 
-CONFIG_FOLDER_PATH = "ckanext.saml.metadata.base_path"
-LEGACY_CONFIG_FOLDER_PATH = "ckan.saml_custom_base_path"
-DEFAULT_FOLDER_PATH = "/etc/ckan/default/saml"
+CONFIG_USE_HTTPS = "ckanext.saml.use_https"
+DEFAULT_USE_HTTPS = False
 
-CONFIG_HTTPS = "ckan.saml_use_https"
-DEFAULT_HTTPS = "off"
-
-CONFIG_USE_NAMEID_AS_EMAIL = "ckan.saml_use_nameid_as_email"
+CONFIG_USE_NAMEID_AS_EMAIL = "ckanext.saml.use_nameid_as_email"
 DEFAULT_USE_NAMEID_AS_EMAIL = False
+
+CONFIG_USE_CUSTOM_MAPPER = "ckanext.saml.use_custom_mapper"
+DEFAULT_USE_CUSTOM_MAPPER = False
+
+CONFIG_REMOTE_IDP_METADATA_URL = "ckanext.saml.idp_metadata_url"
+DEFAULT_REMOTE_IDP_METADATA_URL = None
+
+CONFIG_RELAY_STATE = "ckanext.saml.relay_state"
+DEFAULT_RELAY_STATE = None
+
+CONFIG_USE_ROOT_PATH = "ckanext.saml.use_root_path"
+DEFAULT_USE_ROOT_PATH = False
 
 CONFIG_TTL = "ckanext.saml.session.ttl"
 DEFAULT_TTL = 30 * 24 * 3600
+
 
 def reactivate_deleted_account() -> bool:
     return tk.asbool(tk.config.get(CONFIG_REACTIVATE, DEFAULT_REACTIVATE))
 
 
-def sso_path() -> str:
+def get_sso_path() -> str:
     return tk.config.get(CONFIG_SSO_PATH, DEFAULT_SSO_PATH)
 
 
-def slo_path() -> str:
+def get_slo_path() -> str:
     return tk.config.get(CONFIG_SLO_PATH, DEFAULT_SLO_PATH)
 
 
-def error_template() -> Optional[str]:
+def get_error_template() -> Optional[str]:
     return tk.config.get(CONFIG_ERROR_TPL)
 
 
-def login_button_text() -> str:
-    legacy = tk.config.get(LEGACY_CONFIG_LOGIN_TEXT)
-    if legacy:
-        return legacy
-
+def get_login_button_text() -> str:
     return tk.config.get(CONFIG_LOGIN_TEXT, DEFAULT_LOGIN_TEXT)
 
 
-def folder_path() -> str:
-    legacy = tk.config.get(LEGACY_CONFIG_FOLDER_PATH)
-    if legacy:
-        return legacy
-
-    return tk.config.get(CONFIG_FOLDER_PATH, DEFAULT_FOLDER_PATH)
-
-
-def use_remote_idp() -> bool:
-    return tk.asbool(
-        tk.config.get(CONFIG_USE_REMOTE_IDP, DEFAULT_USE_REMOTE_IDP)
-    )
-
-
-def use_dynamic_config() -> bool:
-    return tk.asbool(tk.config.get(CONFIG_DYNAMIC, DEFAULT_DYNAMIC))
-
-
-def unconditional_login() -> bool:
+def is_unconditional_login_enabled() -> bool:
     return tk.asbool(
         tk.config.get(CONFIG_UNCONDITIONAL_LOGIN, DEFAULT_UNCONDITIONAL_LOGIN)
     )
@@ -104,11 +85,39 @@ def static_host() -> Optional[str]:
     return tk.config.get(CONFIG_STATIC_HOST, DEFAULT_STATIC_HOST)
 
 
-def https() -> str:
-    return tk.config.get(CONFIG_HTTPS, DEFAULT_HTTPS)
+def use_https() -> str:
+    return (
+        "on" if tk.asbool(tk.config.get(CONFIG_USE_HTTPS, DEFAULT_USE_HTTPS)) else "off"
+    )
 
 
 def use_nameid_as_email() -> bool:
     return tk.asbool(
         tk.config.get(CONFIG_USE_NAMEID_AS_EMAIL, DEFAULT_USE_NAMEID_AS_EMAIL)
     )
+
+
+def use_custom_mapper() -> bool:
+    return tk.asbool(tk.config.get(CONFIG_USE_CUSTOM_MAPPER, DEFAULT_USE_CUSTOM_MAPPER))
+
+
+def get_remote_idp_metadata_url() -> str | None:
+    """User can define a url to IDP metadata, istead of configuring it manually
+    via CKAN config"""
+    return tk.config.get(
+        CONFIG_REMOTE_IDP_METADATA_URL, DEFAULT_REMOTE_IDP_METADATA_URL
+    )
+
+
+def get_relay_state() -> str | None:
+    """The destination that the user will be redirected to after they have
+    completed the authentication process at the identity provider (IdP)."""
+    return tk.config.get(CONFIG_RELAY_STATE, DEFAULT_RELAY_STATE)
+
+
+def use_root_path() -> bool:
+    return tk.asbool(tk.config.get(CONFIG_USE_ROOT_PATH, DEFAULT_USE_ROOT_PATH))
+
+
+def get_session_ttl() -> int:
+    return tk.asint(tk.config.get(CONFIG_TTL, DEFAULT_TTL))
