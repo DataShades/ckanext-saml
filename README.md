@@ -150,11 +150,12 @@ This **URL** is accessible only to ``sysadmins`` and could be also accessed via 
 #### Data encryption ####
 
 In order to encrypt the coming data from the IdP you have two options:
-    * Use ``ckanext.saml.settings.security.`` dynamic config options
+- Use ``ckanext.saml.settings.security.`` dynamic config options.
     For example: `ckanext.saml.settings.security.wantNameIdEncrypted = true`.
-    * Or set it withing your `settings.json` file.
+- Set it withing your `settings.json` file
 
 Using those options requires a certificate, that must be provided via dynamic settings or inside `certs` folder.
+
 Check `python3-saml` github page to know more about settings.
 
 ### Interfaces ###
