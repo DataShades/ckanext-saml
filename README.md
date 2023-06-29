@@ -132,6 +132,18 @@ with your SAML settings with `settings.json` file.
         "groups": "http://schemas.xmlsoap.org/claims/Group",
     }
     ```
+    Example, how to provide a custom mapping:
+    ```
+    ckanext.saml.mapping.email = mail
+    ckanext.saml.mapping.user_id = uid
+    ```
+    With those options, your attribute mapping will be next:
+    ```
+    {
+        "email": "mail",
+        "user_id": "uid"
+    }
+    ```
 - ``ckanext.saml.idp_metadata_url`` - Set to fetch the IdP settings from a URL. By **default**
     it's None and IdP settings must be provided manually (either with `settings.json` or with
     dinamyc configuration)
