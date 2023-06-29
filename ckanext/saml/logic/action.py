@@ -1,7 +1,8 @@
 import json
 
-from onelogin.saml2.idp_metadata_parser import \
-    OneLogin_Saml2_IdPMetadataParser as Parser
+from onelogin.saml2.idp_metadata_parser import (
+    OneLogin_Saml2_IdPMetadataParser as Parser,
+)
 
 import ckan.plugins.toolkit as tk
 from ckan.lib.redis import connect_to_redis

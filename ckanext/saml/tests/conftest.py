@@ -1,8 +1,9 @@
 import os
 
 import pytest
-from onelogin.saml2.idp_metadata_parser import \
-    OneLogin_Saml2_IdPMetadataParser as Parser
+from onelogin.saml2.idp_metadata_parser import (
+    OneLogin_Saml2_IdPMetadataParser as Parser,
+)
 from pytest_factoryboy import register
 
 from ckan.tests import factories

@@ -48,6 +48,9 @@ DEFAULT_USE_ROOT_PATH = False
 CONFIG_TTL = "ckanext.saml.session.ttl"
 DEFAULT_TTL = 30 * 24 * 3600
 
+CONFIG_FOLDER_PATH = "ckanext.saml.metadata.base_path"
+DEFAULT_FOLDER_PATH = ""
+
 
 def reactivate_deleted_account() -> bool:
     return tk.asbool(tk.config.get(CONFIG_REACTIVATE, DEFAULT_REACTIVATE))
@@ -121,3 +124,8 @@ def use_root_path() -> bool:
 
 def get_session_ttl() -> int:
     return tk.asint(tk.config.get(CONFIG_TTL, DEFAULT_TTL))
+
+
+def get_folder_path() -> str:
+    """Return a path to a folder with SAML settings"""
+    return tk.config.get(CONFIG_FOLDER_PATH, DEFAULT_FOLDER_PATH)

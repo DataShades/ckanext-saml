@@ -19,7 +19,7 @@ class TestSettingsParser:
 
     def test_config_without_idp(self):
         """If there's no configuration for IDP, there must be an error"""
-        with pytest.raises(SAMLError, match="idp_not_found"):
+        with pytest.raises(SAMLError, match="idp_sso_url_invalid"):
             tk.h.saml_get_settings()
 
     @pytest.mark.ckan_config(f"{const.SETTINGS_PREFIX}idp.entityId", "idp_eid")
@@ -42,7 +42,7 @@ class TestSettingsParser:
     @pytest.mark.ckan_config(f"{const.SETTINGS_PREFIX}idp.x509cert", "idp_cert")
     def test_config_with_idp(self):
         """If there's no configuration for IDP, there must be an error"""
-        settings = helpers._parse_settings()
+        settings = helpers._parse_dynamic_settings()
 
         assert settings["strict"] is True
         assert settings["debug"] is True
@@ -89,7 +89,7 @@ class TestSettingsParser:
             "ckanext.saml.helpers._get_remote_idp_settings",
             return_value=idp_metadata,
         ):
-            settings = helpers._parse_settings()
+            settings = helpers._parse_dynamic_settings()
 
         assert settings["idp"]
         assert settings["idp"]["x509cert"]

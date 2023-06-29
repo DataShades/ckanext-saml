@@ -4,12 +4,20 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 ### [1.0.0](https://github.com/DataShades/ckanext-saml/compare/v0.3.1...v1.0.0) (2023-06-20)
+#### ⚠ BREAKING CHANGES
+* drop support Python lower than 3.8 (Python 3.7 secury support EOL - 27 Jun 2023)
 * drop support CKAN lower than 2.10.0
-* drop `settings.json` and `mapping.py` support. Instead, use `ckanext.saml.mapping.`
-and `ckanext.saml.settings.` dynamic config options to declare SAML settings or
-attribute mapping.
-
-
+* drop `advanced_settings.json` and `mapping.py` support.
+    * Use `settings.json` for a static SAML settings and place here settings you've used in `advanced_settings.json`
+      Or use `ckanext.saml.settings.` dynamic config options to declare SAML settings
+    * Use `ckanext.saml.mapping.`to declare SAML attribute mapping.
+* If you are using dynamic config, instead of creating a `certs` folder, you could use respective config options, e.g `x509cert`, `privateKey`, `x509certNew` for `sp` and `idp` configuration.
+* Config option changes:
+    * `ckan.saml_use_https` changed to `ckanext.saml.use_https`
+    * `ckanext.saml.use_https` now must be `True` or `False`
+    * `ckan.saml_use_nameid_as_email` changed to `ckanext.saml.use_nameid_as_email`
+    * `ckan.saml_login_button_text` legacy option dropped. Use `ckanext.saml.login_button_text` instead
+    * `ckan.saml_custom_base_path` legacy option dropped. Use `ckanext.saml.metadata.base_path` instead
 ### [0.3.1](https://github.com/DataShades/ckanext-saml/compare/v0.3.0...v0.3.1) (2023-04-24)
 
 

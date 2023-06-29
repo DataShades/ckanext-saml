@@ -12,8 +12,8 @@ import ckan.lib.helpers as h
 import ckan.model as model
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
-from ckan.logic.action.create import _get_random_username_from_email
 from ckan import types
+from ckan.logic.action.create import _get_random_username_from_email
 
 from ckanext.saml import config, utils
 from ckanext.saml.interfaces import ICKANSAML

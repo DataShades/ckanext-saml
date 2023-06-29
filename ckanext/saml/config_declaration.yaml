@@ -57,3 +57,6 @@ groups:
         type: int
         default: 2592000
         description: The amount of time in seconds before the remember cookie expires.
+
+      - key: ckanext.saml.metadata.base_path
+        description: A path to a folder with settings.json

@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import contextvars
+import json
 import logging
+import os
+import re
 from typing import Any, Optional
 
 from onelogin.saml2.auth import OneLogin_Saml2_Settings as SAMLSettings
@@ -58,13 +62,44 @@ def saml_get_attribute_mapper() -> dict[str, str]:
 
 
 def saml_get_settings() -> SAMLSettings:
-    """Prepare a SAML settings. Fill a settings with a default values before,
-    then update it if an option is declared."""
+    """Prepare a SAML settings.
+    Use ither settings for a settings.json file or a dynamic settings from
+    CKAN config"""
+    if config.get_folder_path():
+        return SAMLSettings(settings=_parse_file_settings())
 
-    return SAMLSettings(settings=_parse_settings())
+    return SAMLSettings(_parse_dynamic_settings())
 
 
-def _parse_settings():
+def _parse_file_settings() -> dict[str, Any]:
+    filepath = os.path.join(config.get_folder_path(), "settings.json")
+
+    if not os.path.exists(filepath):
+        log.warning("SAML2 settings file not found: %s", filepath)
+        return {}
+
+    with open(filepath) as src:
+        settings_str = src.read()
+
+    prefix = "ckanext.saml.settings.substitution."
+
+    for k, v in tk.config.items():
+        if not k.startswith(prefix):
+            continue
+
+        settings_str = settings_str.replace(f"<{k[len(prefix):]}>", v)
+
+    settings = json.loads(settings_str)
+
+    if config.get_remote_idp_metadata_url():
+        settings["idp"] = _get_remote_idp_settings()
+
+    settings.setdefault("custom_base_path", config.get_folder_path())
+
+    return settings
+
+
+def _parse_dynamic_settings() -> dict[str, Any]:
     settings = _get_default_sp_settings()
 
     prefix = const.SETTINGS_PREFIX
@@ -114,7 +149,18 @@ def _get_default_sp_settings() -> dict[str, Any]:
             "x509cert": "",
             "privateKey": "",
         },
-        "idp": {},
+        "idp": {
+            "entityId": "<IDP ENTITY ID>",
+            "singleSignOnService": {
+                "url": "<LOGIN URL>",
+                "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+            },
+            "singleLogoutService": {
+                "url": "<LOGOUT URL>",
+                "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+            },
+            "x509cert": "",
+        },
     }
 
 
