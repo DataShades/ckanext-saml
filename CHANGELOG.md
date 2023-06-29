@@ -7,10 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 #### ⚠ BREAKING CHANGES
 * drop support Python lower than 3.8 (Python 3.7 secury support EOL - 27 Jun 2023)
 * drop support CKAN lower than 2.10.0
-* drop `advanced_settings.json` and `mapping.py` support.
-    * Use `settings.json` for a static SAML settings and place here settings you've used in `advanced_settings.json`
-      Or use `ckanext.saml.settings.` dynamic config options to declare SAML settings
-    * Use `ckanext.saml.mapping.`to declare SAML attribute mapping.
+* drop `mapping.py` support. Use `ckanext.saml.mapping.`to declare SAML attribute mapping.
 * If you are using dynamic config, instead of creating a `certs` folder, you could use respective config options, e.g `x509cert`, `privateKey`, `x509certNew` for `sp` and `idp` configuration.
 * Config option changes:
     * `ckan.saml_use_https` changed to `ckanext.saml.use_https`

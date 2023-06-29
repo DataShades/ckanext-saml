@@ -79,7 +79,12 @@ ckanext.saml.idp_metadata_url = http://127.0.0.1:9001/simplesaml/saml2/idp/metad
 
 If you don't want to use dynamic settings or you have a complicated settings with arrays and objects,
 you can use an old styled config file. Use `ckanext.saml.metadata.base_path` option and provide here a folder
-with your SAML settings with `settings.json` file.
+with your SAML settings with `settings.json` and `advanced_settings.json` files.
+
+``advanced_settings.json`` is used for additional configurations such as
+security.  It also needed to modify the ``contactPerson`` and ``organization``
+sections in it if your are going to provide your SP data to your IdP.
+
 
 #### Config settings ####
 
