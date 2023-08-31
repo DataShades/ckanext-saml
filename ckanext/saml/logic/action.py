@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import json
+from typing import Any
 
 import ckan.plugins.toolkit as tk
 from ckan.lib.redis import connect_to_redis
@@ -17,14 +20,17 @@ def get_actions():
 
 
 def _idp_key():
+    """Cache key for IdP details."""
     site_id = tk.config["ckan.site_id"]
     return "ckan:{}:saml:idp".format(site_id)
 
 
-def idp_refresh(context, data_dict):
+def idp_refresh(context: dict[str, Any], data_dict: dict[str, Any]):
+    """Refresh IdP details using remote metadata."""
     tk.check_access("sysadmin", context, data_dict)
 
-    url = tk.config.get(CONFIG_URL)
+    url = data_dict.get("url", tk.config.get(CONFIG_URL))
+
     if not url:
         raise tk.ObjectNotFound(
             "Metadata URL is not configured: {}".format(CONFIG_URL)
@@ -36,7 +42,8 @@ def idp_refresh(context, data_dict):
     return meta["idp"]
 
 
-def idp_show(context, data_dict):
+def idp_show(context: dict[str, Any], data_dict: dict[str, Any]):
+    """Show IdP details pulled from the remote metadata."""
     tk.check_access("sysadmin", context, data_dict)
     cache = connect_to_redis()
 
