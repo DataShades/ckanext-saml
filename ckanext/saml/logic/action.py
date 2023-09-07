@@ -25,6 +25,14 @@ def _idp_key():
     return "ckan:{}:saml:idp".format(site_id)
 
 
+def _read_remote_metadata(path_or_url: str):
+    if path_or_url.startswith("file://"):
+        with open(path_or_url[len("file://"):]) as src:
+            return Parser.parse(src.read())
+
+    return Parser.parse_remote(path_or_url)
+
+
 def idp_refresh(context: dict[str, Any], data_dict: dict[str, Any]):
     """Refresh IdP details using remote metadata."""
     tk.check_access("sysadmin", context, data_dict)
@@ -35,7 +43,7 @@ def idp_refresh(context: dict[str, Any], data_dict: dict[str, Any]):
         raise tk.ObjectNotFound(
             "Metadata URL is not configured: {}".format(CONFIG_URL)
         )
-    meta = Parser.parse_remote(url)
+    meta = _read_remote_metadata(url)
 
     cache = connect_to_redis()
     cache.set(_idp_key(), json.dumps(meta["idp"]))
