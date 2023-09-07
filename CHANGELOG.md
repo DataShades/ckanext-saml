@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.2](https://github.com/DataShades/ckanext-saml/compare/v0.3.1...v0.3.2) (2023-09-07)
+
+
+### Features
+
+* read remote metadata from file ([b912844](https://github.com/DataShades/ckanext-saml/commit/b9128446c2e713adb7053a2c056628efebb68940))
+* saml_idp_refresh accepts `url` parameter ([d66989b](https://github.com/DataShades/ckanext-saml/commit/d66989b9d9a71c07b7ea2260be0ceea86b65fb2d))
+
+
+### Bug Fixes
+
+* automatically call idp_refresh when it is not available in cache ([3cc8291](https://github.com/DataShades/ckanext-saml/commit/3cc82912414403432f9e7a7a97f9928f421474ff))
+
 ### [0.3.1](https://github.com/DataShades/ckanext-saml/compare/v0.3.0...v0.3.1) (2023-04-24)
 
 
