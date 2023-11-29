@@ -60,3 +60,8 @@ groups:
 
       - key: ckanext.saml.metadata.base_path
         description: A path to a folder with settings.json
+
+      - key: ckanext.saml.log_last_saml_response
+        type: bool
+        default: False
+        description: Define if we need to log a last SAML response for a debug purpose.

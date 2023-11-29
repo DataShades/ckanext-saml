@@ -46,6 +46,18 @@ def post_login():
     auth.process_response(request_id=request_id)
     errors = auth.get_errors()
 
+    if config.log_last_saml_response():
+        utils.log_saml_response(
+            {
+                "errors": errors,
+                "error_reason": auth.get_last_error_reason(),
+                "user_attributes": auth.get_attributes(),
+                "is_authenticated": auth.is_authenticated(),
+                "idp_data": auth.get_settings().get_idp_data(),
+                "sp_data": auth.get_settings().get_sp_data(),
+            }
+        )
+
     if errors:
         log.error("{}".format(errors))
         error_tpl = config.get_error_template()

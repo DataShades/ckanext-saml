@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import logging
 import re
+import json
 from typing import Any
 from urllib.parse import urlparse
 
@@ -11,6 +13,8 @@ import ckan.plugins.toolkit as tk
 
 from ckanext.saml import config
 from ckanext.saml.interfaces import ICKANSAML
+
+log = logging.getLogger(__name__)
 
 
 def prepare_from_flask_request() -> dict[str, Any]:
@@ -56,3 +60,10 @@ def make_auth(req: dict[str, Any]) -> OneLogin_Saml2_Auth:
 
 def decode_saml_response(response: str) -> bytes:
     return OneLogin_Saml2_Utils.decode_base64_and_inflate(response)
+
+
+def log_saml_response(saml_response_data: dict[str, Any]) -> None:
+    """Log SAML response details"""
+    log.debug("*** SAML DEBUG ***")
+    log.debug(json.dumps(saml_response_data, indent=4))
+    log.debug("*** SAML DEBUG ***")

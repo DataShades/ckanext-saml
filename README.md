@@ -159,6 +159,9 @@ sections in it if your are going to provide your SP data to your IdP.
 - ``ckanext.saml.metadata.base_path`` - A path to a folder with SAML settings (e.g. `settings.json`
     or `certs` folder). By **default** we are using dynamic settings.
 
+- ``ckanext.saml.log_last_saml_response`` - Set it to `true` if you want to log
+    a last SAML response for a debug purpose.
+
 #### SP Metadata file ####
 
 To setup your SP on the IdP side you could either do it manually, providing required values, that you could get from the `ckan saml show-config` command, or  give a link to this URL `/saml/metadata` that will return the SP settings in `XML` format.

@@ -51,6 +51,9 @@ DEFAULT_TTL = 30 * 24 * 3600
 CONFIG_FOLDER_PATH = "ckanext.saml.metadata.base_path"
 DEFAULT_FOLDER_PATH = ""
 
+CONFIG_SAVE_LAST_SAML_RESPONSE = "ckanext.saml.log_last_saml_response"
+DEFAULT_SAVE_LAST_SAML_RESPONSE = False
+
 
 def reactivate_deleted_account() -> bool:
     return tk.asbool(tk.config.get(CONFIG_REACTIVATE, DEFAULT_REACTIVATE))
@@ -129,3 +132,11 @@ def get_session_ttl() -> int:
 def get_folder_path() -> str:
     """Return a path to a folder with SAML settings"""
     return tk.config.get(CONFIG_FOLDER_PATH, DEFAULT_FOLDER_PATH)
+
+
+def log_last_saml_response() -> bool:
+    """Define if we need to store a last SAML response for a debug purpose.
+    If could be used to infer the user attributes if the client didn't provide it"""
+    return tk.asbool(
+        tk.config.get(CONFIG_SAVE_LAST_SAML_RESPONSE, DEFAULT_SAVE_LAST_SAML_RESPONSE)
+    )
