@@ -295,6 +295,10 @@ def saml_login():
             )
             if tk.request.args.get("redirect"):
                 redirect = tk.request.args.get("redirect")
+
+            if tk.g.user:
+                return h.redirect_to(redirect)
+
             log.info("Redirect to SAML IdP.")
             return h.redirect_to(auth.login(return_to=redirect))
         else:
