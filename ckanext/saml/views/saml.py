@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime, timedelta
 
 import ckan.lib.helpers as h
+from ckan.logic import functools
 import ckan.model as model
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
@@ -33,6 +34,7 @@ saml_details = [
 saml = Blueprint("saml", __name__)
 
 
+@functools.lru_cache(1)
 def get_bp():
     saml.add_url_rule(config.slo_path(), view_func=post_logout)
 
