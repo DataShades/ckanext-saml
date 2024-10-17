@@ -1,3 +1,48 @@
-[tool.black]
-line-length = 79
-preview = true
+[build-system]
+requires = [ "setuptools",]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ckanext-saml"
+version = "0.3.4.post1"
+description = ""
+classifiers = [ "Development Status :: 4 - Beta", "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)", "Programming Language :: Python :: 3.7", "Programming Language :: Python :: 3.8", "Programming Language :: Python :: 3.9", "Programming Language :: Python :: 3.10",]
+keywords = [ "CKAN",]
+requires-python = ">= 3.7"
+dependencies = [ "python3-saml", "typing-extensions", "ckanext-toolbelt",]
+authors = [
+    {name = "DataShades", email = "datashades@linkdigital.com.au"},
+    {name = "Yan Rudendo", email = "yan.rudenko@linkdigital.com.au"},
+    {name = "Sergey Motornyuk", email = "sergey.motornyuk@linkdigital.com.au"},
+]
+maintainers = [
+    {name = "DataShades", email = "datashades@linkdigital.com.au"},
+]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.license]
+text = "AGPL"
+
+[project.urls]
+Homepage = "https://github.com/DataShades/ckanext-saml"
+
+[project.optional-dependencies]
+adfs = [ "lxml==4.6.4",]
+
+[project.entry-points."ckan.plugins"]
+saml = "ckanext.saml.plugin:SamlPlugin"
+
+[project.entry-points."babel.extractors"]
+ckan = "ckan.lib.extract:extract_ckan"
+
+[tool.setuptools.packages]
+find = {}
+
+
+[tool.pytest.ini_options]
+filterwarnings = [ "ignore::sqlalchemy.exc.SADeprecationWarning", "ignore::sqlalchemy.exc.SAWarning", "ignore::DeprecationWarning",]
+addopts = "--ckan-ini test.ini"
+testpaths = [ "ckanext/saml/tests",]
