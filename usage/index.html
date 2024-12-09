@@ -8,11 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://.github.io/ckanext-saml/troubleshooting/">
+        <link rel="canonical" href="https://.github.io/ckanext-saml/usage/">
       
       
-        <link rel="prev" href="../usage/">
+        <link rel="prev" href="../actions/">
       
+      
+        <link rel="next" href="../troubleshooting/">
       
       
       <link rel="icon" href="../image/favicon.ico">
@@ -20,7 +22,7 @@
     
     
       
-        <title>Troubleshooting - ckanext-saml</title>
+        <title>Usage - ckanext-saml</title>
       
     
     
@@ -72,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#troubleshooting" class="md-skip">
+        <a href="#usage" class="md-skip">
           Skip to content
         </a>
       
@@ -107,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Troubleshooting
+              Usage
             
           </span>
         </div>
@@ -336,26 +338,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../usage/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Usage
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -372,7 +354,7 @@
           
   
   <span class="md-ellipsis">
-    Troubleshooting
+    Usage
   </span>
   
 
@@ -383,7 +365,7 @@
         
   
   <span class="md-ellipsis">
-    Troubleshooting
+    Usage
   </span>
   
 
@@ -405,9 +387,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#systemerror" class="md-nav__link">
+  <a href="#basic-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      SystemError
+      Basic usage
     </span>
   </a>
   
@@ -417,6 +399,26 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -448,9 +450,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#systemerror" class="md-nav__link">
+  <a href="#basic-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      SystemError
+      Basic usage
     </span>
   </a>
   
@@ -474,16 +476,162 @@
   
 
 
-<h1 id="troubleshooting">Troubleshooting</h1>
-<p>Typical issues that users\developers can have</p>
-<h2 id="systemerror">SystemError</h2>
-<p><strong>import xmlsec - SystemError: null argument to internal routine</strong></p>
-<p>If this error appears on CentOS, you might need to install
-additional packages:</p>
-<pre><code>```
-yum install libxml2-devel xmlsec1-devel xmlsec1-openssl-devel libtool-ltdl-devel
-```
+<h1 id="usage">Usage</h1>
+<h2 id="basic-usage">Basic usage</h2>
+<p>This is the example of setting up of the extension against 
+<a href="https://auth0.com/">Auth0</a> authentication and authorization platform.</p>
+<ol>
+<li>
+<p>Register and <a href="https://auth0.com/api/auth/login?redirectTo=dashboard">log in</a> to Auth0</p>
+<p><img alt="Auth0 platform login" src="../image/auth0-login.png" /></p>
+</li>
+<li>
+<p>Go to the Applications section
+    <img alt="Auth0 platform apps" src="../image/auth0-applications.png" /></p>
+</li>
+<li>
+<p>Create a new app and switch to the Settings tab to set necessary configs
+    <img alt="Auth0 platform settings-1" src="../image/auth0-settings1.png" />
+    <img alt="Auth0 platform settings-2" src="../image/auth0-settings2.png" /></p>
+</li>
+<li>
+<p>Switch to the Addons tab and enable SAML2 WEB APP
+    <img alt="Auth0 platform addons" src="../image/auth0-addons.png" /></p>
+</li>
+<li>
+<p>Get all necessary IdP configs
+    <img alt="Auth0 platform idp configs" src="../image/auth0-idp-configs.png" /></p>
+<p>by downloading Identity Provider Metadata</p>
+<hr />
+<pre><code>&lt;EntityDescriptor entityID="urn:dev-4kxfsg2.us.auth0.com" xmlns="urn:oasis:names:tc:SAML:2.0:metadata"&gt;
+    &lt;IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"&gt;
+        &lt;KeyDescriptor use="signing"&gt;
+            &lt;KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#"&gt;
+                &lt;X509Data&gt;
+                &lt;X509Certificate&gt;4VDqTySXJSeAdNI4HEGux&lt;/X509Certificate&gt;
+                &lt;/X509Data&gt;
+            &lt;/KeyInfo&gt;
+        &lt;/KeyDescriptor&gt;
+        &lt;SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://dev-4kxfsg2.us.auth0.com/samlp/I1jiX2fUdlcermot0cl0ACDNWek01qx4/logout"/&gt;
+        &lt;SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://dev-4kxfsg2.us.auth0.com/samlp/I1jiX2fUdlcermot0cl0ACDNWek01qx4/logout"/&gt;
+        &lt;NameIDFormat&gt;urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress&lt;/NameIDFormat&gt;
+        &lt;NameIDFormat&gt;urn:oasis:names:tc:SAML:2.0:nameid-format:persistent&lt;/NameIDFormat&gt;
+        &lt;NameIDFormat&gt;urn:oasis:names:tc:SAML:2.0:nameid-format:transient&lt;/NameIDFormat&gt;
+        &lt;SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://dev-4kxfsg2.us.auth0.com/samlp/I1jiX2fUdlcermot0cl0ACDNWek01qx4"/&gt;
+        &lt;SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://dev-4kxfsg2.us.auth0.com/samlp/I1jiX2fUdlcermot0cl0ACDNWek01qx4"/&gt;
+        &lt;Attribute Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="E-Mail Address" xmlns="urn:oasis:names:tc:SAML:2.0:assertion"/&gt;
+        &lt;Attribute Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="Given Name" xmlns="urn:oasis:names:tc:SAML:2.0:assertion"/&gt;
+        &lt;Attribute Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="Name" xmlns="urn:oasis:names:tc:SAML:2.0:assertion"/&gt;
+        &lt;Attribute Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="Surname" xmlns="urn:oasis:names:tc:SAML:2.0:assertion"/&gt;
+        &lt;Attribute Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="Name ID" xmlns="urn:oasis:names:tc:SAML:2.0:assertion"/&gt;
+    &lt;/IDPSSODescriptor&gt;
+&lt;/EntityDescriptor&gt;
 </code></pre>
+<hr />
+</li>
+<li>
+<p>Configure main settings file <code>settings.json</code>. 
+    It may be done manually inside the file or through the CKAN configuration 
+    file using variables with prefix <code>ckanext.saml.settings.substitution</code>.
+    The example of the settings.json file is below:</p>
+<hr />
+<pre><code>{
+    "strict": true,
+    "debug": true,
+
+    "sp": {
+        "entityId": "&lt;SP_ENTITY_ID&gt;",
+        "assertionConsumerService": {
+            "url": "&lt;SITE_URL&gt;/sso/post",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+        },
+        "singleLogoutService": {
+            "url": "&lt;SITE_URL&gt;/slo/post",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "NameIDFormat": "urn:oasis:names:tc:SAML:2.0:nameid-format:transient",
+        "x509cert": "&lt;SP_CERT&gt;",
+        "privateKey": "&lt;SP_PRIVATE_CERT&gt;"
+    },
+
+    "idp": {
+        "entityId": "&lt;IDP_ENTITY_ID&gt;",
+        "singleSignOnService": {
+            "url": "&lt;SSO_URL&gt;",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "singleLogoutService": {
+            "url": "&lt;SLO_URL&gt;",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "x509cert": "&lt;CERT&gt;"
+    },
+
+    "security": {
+        "requestedAuthnContext": false,
+        "nameIdEncrypted": false,
+        "authnRequestsSigned": true,
+        "logoutRequestSigned": false,
+        "logoutResponseSigned": false,
+        "signMetadata": false,
+        "wantMessagesSigned": false,
+        "wantAssertionsSigned": false,
+        "wantNameId" : true,
+        "wantNameIdEncrypted": false,
+        "wantAssertionsEncrypted": false,
+        "signatureAlgorithm": "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
+        "digestAlgorithm": "http://www.w3.org/2001/04/xmlenc#sha256"
+    },
+    "contactPerson": {
+        "technical": {
+            "givenName": "technical_name",
+            "emailAddress": "technical@example.com"
+        },
+        "support": {
+            "givenName": "support_name",
+            "emailAddress": "support@example.com"
+        }
+    },
+    "organization": {
+        "en-US": {
+            "name": "sp_test",
+            "displayname": "SP test",
+            "url": "http://sp.example.com"
+        }
+    }
+}
+</code></pre>
+<hr />
+</li>
+<li>
+<p>SAML settings in CKAN config file (e.g. ckan.ini or production.ini)</p>
+<hr />
+<pre><code>## ckanext-saml
+ckanext.saml.unconditional_login = true
+ckan.saml_custom_base_path = %(here)s/saml
+ckanext.saml.metadata.base_path = %(here)s/saml
+ckan.saml_use_https = true
+ckanext.saml.settings.dynamic = true
+ckanext.saml.session.ttl = 2_592_000
+ckanext.saml.reactivate_deleted_account = true
+ckanext.saml.settings.substitution.SITE_URL = %(ckan.site_url)s
+ckanext.saml.settings.substitution.SP_ENTITY_ID = %(ckan.site_url)s
+ckanext.saml.settings.substitution.IDP_ENTITY_ID = urn:dev-4kxfsg2.us.auth0.com
+ckanext.saml.settings.substitution.SSO_URL = https://dev-4kxfsg2.us.auth0.com/samlp/I1jiX2fUdlcermot
+ckanext.saml.settings.substitution.SLO_URL = https://dev-4kxfsg2.us.auth0.com/samlp/I1jiX2fUdlcermot
+ckanext.saml.settings.substitution.CERT = MIIDHTCCAgWgAwIBAgIJMpgtCcFJo8dsdff...VDqTySXJSeAdNI4HEGux
+ckanext.saml.settings.substitution.SP_PRIVATE_CERT = MIIEvgIBADANBgkqhkiG9w0B...kYLQbPdaq+Bv7keWLz
+</code></pre>
+</li>
+<li>
+<p>Log in to CKAN using SAML
+    <img alt="CKAN login" src="../image/ckan-login.png" />
+    <img alt="SAML login" src="../image/saml-login.png" /></p>
+</li>
+<li>
+<p>Finally you are there with secure access.</p>
+</li>
+</ol>
 
 
 
@@ -519,7 +667,7 @@ yum install libxml2-devel xmlsec1-devel xmlsec1-openssl-devel libtool-ltdl-devel
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../usage/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Usage">
+          <a href="../actions/" class="md-footer__link md-footer__link--prev" aria-label="Previous: API actions">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -529,11 +677,27 @@ yum install libxml2-devel xmlsec1-devel xmlsec1-openssl-devel libtool-ltdl-devel
                 Previous
               </span>
               <div class="md-ellipsis">
-                Usage
+                API actions
               </div>
             </div>
           </a>
         
+        
+          
+          <a href="../troubleshooting/" class="md-footer__link md-footer__link--next" aria-label="Next: Troubleshooting">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Troubleshooting
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
         
       </nav>
     
