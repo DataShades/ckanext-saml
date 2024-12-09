@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="image/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.47">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.48">
     
     
       
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ckanext-saml" class="md-skip">
+        <a href="#home" class="md-skip">
           Skip to content
         </a>
       
@@ -305,6 +305,24 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#about" class="md-nav__link">
+    <span class="md-ellipsis">
+      About
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ckanext-saml" class="md-nav__link">
+    <span class="md-ellipsis">
+      ckanext-saml
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       Quick start
@@ -404,6 +422,46 @@
   
   
     <li class="md-nav__item">
+      <a href="actions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API actions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="troubleshooting/" class="md-nav__link">
         
   
@@ -442,6 +500,24 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#about" class="md-nav__link">
+    <span class="md-ellipsis">
+      About
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ckanext-saml" class="md-nav__link">
+    <span class="md-ellipsis">
+      ckanext-saml
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#quick-start" class="md-nav__link">
@@ -506,43 +582,47 @@
   
 
 
-<h1 id="ckanext-saml">ckanext-saml</h1>
+<h1 id="home">Home</h1>
+<h2 id="about">About</h2>
+<hr />
+<h2 id="ckanext-saml"><strong>ckanext-saml</strong></h2>
+<hr />
 <p>This extension adds an ability to login from other source (known as
 <a href="https://en.wikipedia.org/wiki/Identity_provider_(SAML)">IdP</a>) using
 <a href="https://en.wikipedia.org/wiki/SAML_2.0">SAML2</a> standard. Your instance is
 presented as the <a href="https://en.wikipedia.org/wiki/Service_provider_(SAML)">SP</a>.</p>
-<p>See the <a href="https://datashades.github.io/ckanext-charts/">documentation</a> for more information.</p>
+<p>See the <a href="https://datashades.github.io/ckanext-saml/">documentation</a> for more 
+information.</p>
 <h2 id="quick-start">Quick start</h2>
 <ul>
-<li>Install it with <code>PyPi</code> with <code>pip install ckanext-saml</code></li>
-<li>Add <code>saml</code> to the list of plugins in your CKAN config (<code>ckan.plugins = saml</code>)</li>
+<li>
+<p>Install it with <code>PyPi</code>: </p>
+<p><code>pip install ckanext-saml</code></p>
+</li>
+<li>
+<p>Add <code>saml</code> to the list of plugins in your CKAN config (<code>ckan.plugins = saml</code>)</p>
+</li>
 </ul>
+<p>Configure the extension according to <a href="https://datashades.github.io/ckanext-saml/">documentation</a>.</p>
 <h2 id="developer-installation">Developer installation</h2>
 <p>To install <code>ckanext-saml</code> for development, activate your CKAN virtualenv and
 do:</p>
 <pre><code>git clone https://github.com/DataShades/ckanext-saml.git
 cd ckanext-saml
-pip install -e '.[dev]'
+pip install -e .
 </code></pre>
 <h2 id="tests">Tests</h2>
 <p>To run the tests, do:</p>
 <pre><code>pytest --ckan-ini=test.ini
 </code></pre>
 <h2 id="building-the-documentation">Building the documentation</h2>
-<p>We are using <code>mkdocs</code> to build the documentation. To build and deploy the documentation, do:</p>
-<pre><code>CHARTS_FIELDS=1 mkdocs build &amp;&amp; mkdocs gh-deploy
+<p>We are using <code>mkdocs</code> to build the documentation. To build and deploy the 
+documentation, do:</p>
+<pre><code>mkdocs build &amp;&amp; mkdocs gh-deploy
 </code></pre>
-<p>We need to set the <code>CHARTS_FIELDS</code> for our custom handler, that autogenerate documentation
-for chart types fields.</p>
-<p>The CKAN instance will be initialized, because we will call validators and helpers in this code. Therefore, you'll need
-another environment variable to set the CKAN configuration file path:</p>
-<pre><code>export CKAN_INI=$PWD/config/ckan.ini
-</code></pre>
-<p>The config file must enable the <code>ckanext-saml</code> plugin:</p>
-<pre><code>ckan.plugins = ... saml ...
-</code></pre>
-<p>If you're working on the documentation, you can run the following command to start a live-reloading server without
-gathering the chart types fields data. It will speed up the process significantly, as we won't need to wait for the
+<p>If you're working on the documentation, you can run the following command to 
+start a live-reloading server without gathering the chart types fields data. It 
+will speed up the process significantly, as we won't need to wait for the
 CKAN initialization:</p>
 <pre><code>mkdocs serve -a 127.0.0.1:8001
 </code></pre>

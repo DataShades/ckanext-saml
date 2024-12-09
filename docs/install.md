@@ -15,32 +15,34 @@ Compatibility with core CKAN versions:
 | 2.9 and earlier | no            |
 | 2.10+           | yes           |
 
+
 ## Installation
 
-To install ``ckanext-saml``:
 
-1. Install the extension from `PyPI`:
-    ```sh
-    pip install ckanext-saml
-    ```
+- Install the extension from ``PyPI``:
 
-2. Add ``saml`` to the ``ckan.plugins`` setting in your CKAN configuration file (e.g. `ckan.ini` or `production.ini`):
+```
+pip install ckanext-saml 
+```
 
-    ```
-    ckan.plugins = ... saml ...
-    ```
+- Add ``saml`` to the ``ckan.plugins`` setting in your CKAN configuration file (e.g. `ckan.ini` or `production.ini`):
 
-3. Initialize a new table (if you previously used [ckanext-saml2] (https://github.com/datashades/ckanext-saml2), you can skip this step or make sure that you have saml2_user table in your DB):
+```
+ckan.plugins = ... saml ...
+```
 
-    ```
-    ckan db upgrade -p saml
-    ```
+- Initialize a new table (if you previously used [ckanext-saml2] (https://github.com/datashades/ckanext-saml2), you can skip this step or make sure that you have saml2_user table in your DB):
+
+```
+ckan db upgrade -p saml
+```
 
 ## Dependencies
 
 The extension requires the following libraries to be installed and enabled:
 
 1. ``python`` => 3.7
-2. ``xmlsec``: Python bindings for the XML Security Library.
-3. ``lxml``: Python bindings for the libxml2 and libxslt libraries.
-4. ``isodate``: An ISO 8601 date/time/duration parser and formatter
+2. ``python3-saml``: SAML Python3 toolkit.
+3. ``xmlsec``: Python bindings for the XML Security Library.
+4. ``lxml``: Python bindings for the libxml2 and libxslt libraries.
+5. ``isodate``: An ISO 8601 date/time/duration parser and formatter

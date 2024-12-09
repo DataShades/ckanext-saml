@@ -1,4 +1,11 @@
-# ckanext-saml
+# Home
+
+## About
+----------------
+**ckanext-saml**
+----------------
+
+----------------
 
 This extension adds an ability to login from other source (known as
 [IdP](https://en.wikipedia.org/wiki/Identity_provider_(SAML))) using
@@ -10,11 +17,13 @@ information.
 
 ## Quick start
 
-- Install it with `PyPi` with `pip install ckanext-saml`
+- Install it with `PyPi`: 
+
+    ```pip install ckanext-saml```
+
 - Add `saml` to the list of plugins in your CKAN config (`ckan.plugins = saml`)
 
-Config the extension according to this 
-[documentation](https://datashades.github.io/ckanext-saml/)
+Configure the extension according to [documentation](https://datashades.github.io/ckanext-saml/).
 
 
 ## Developer installation
@@ -24,7 +33,7 @@ do:
 
     git clone https://github.com/DataShades/ckanext-saml.git
     cd ckanext-saml
-    pip install -e '.[dev]'
+    pip install -e .
 
 ## Tests
 
@@ -35,24 +44,14 @@ To run the tests, do:
 
 ## Building the documentation
 
-We are using `mkdocs` to build the documentation. To build and deploy the documentation, do:
+We are using `mkdocs` to build the documentation. To build and deploy the 
+documentation, do:
 
-    CHARTS_FIELDS=1 mkdocs build && mkdocs gh-deploy
+    mkdocs build && mkdocs gh-deploy
 
-We need to set the `CHARTS_FIELDS` for our custom handler, that autogenerate documentation
-for chart types fields.
-
-The CKAN instance will be initialized, because we will call validators and helpers in this code. Therefore, you'll need
-another environment variable to set the CKAN configuration file path:
-
-    export CKAN_INI=$PWD/config/ckan.ini
-
-The config file must enable the `ckanext-saml` plugin:
-
-    ckan.plugins = ... saml ...
-
-If you're working on the documentation, you can run the following command to start a live-reloading server without
-gathering the chart types fields data. It will speed up the process significantly, as we won't need to wait for the
+If you're working on the documentation, you can run the following command to 
+start a live-reloading server without gathering the chart types fields data. It 
+will speed up the process significantly, as we won't need to wait for the
 CKAN initialization:
 
     mkdocs serve -a 127.0.0.1:8001

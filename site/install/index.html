@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../image/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.47">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.48">
     
     
       
@@ -388,6 +388,46 @@
   
   
     <li class="md-nav__item">
+      <a href="../actions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API actions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../troubleshooting/" class="md-nav__link">
         
   
@@ -499,26 +539,26 @@ examples of fields that can be used in <code>settings.json</code> and
 </tbody>
 </table>
 <h2 id="installation_1">Installation</h2>
-<p>To install <code>ckanext-saml</code>:</p>
-<ol>
-<li>
-<p>Install the extension from <code>PyPI</code>:
-    <code>sh
-    pip install ckanext-saml</code></p>
-</li>
-<li>
-<p>Add <code>saml</code> to the <code>ckan.plugins</code> setting in your CKAN configuration file (e.g. <code>ckan.ini</code> or <code>production.ini</code>):</p>
-<p><code>ckan.plugins = ... saml ...</code></p>
-</li>
-<li>
-<p>Initialize a new table (if you previously used [ckanext-saml2] (https://github.com/datashades/ckanext-saml2), you can skip this step or make sure that you have saml2_user table in your DB):</p>
-<p><code>ckan db upgrade -p saml</code></p>
-</li>
-</ol>
+<ul>
+<li>Install the extension from <code>PyPI</code>:</li>
+</ul>
+<pre><code>pip install ckanext-saml 
+</code></pre>
+<ul>
+<li>Add <code>saml</code> to the <code>ckan.plugins</code> setting in your CKAN configuration file (e.g. <code>ckan.ini</code> or <code>production.ini</code>):</li>
+</ul>
+<pre><code>ckan.plugins = ... saml ...
+</code></pre>
+<ul>
+<li>Initialize a new table (if you previously used [ckanext-saml2] (https://github.com/datashades/ckanext-saml2), you can skip this step or make sure that you have saml2_user table in your DB):</li>
+</ul>
+<pre><code>ckan db upgrade -p saml
+</code></pre>
 <h2 id="dependencies">Dependencies</h2>
 <p>The extension requires the following libraries to be installed and enabled:</p>
 <ol>
 <li><code>python</code> =&gt; 3.7</li>
+<li><code>python3-saml</code>: SAML Python3 toolkit.</li>
 <li><code>xmlsec</code>: Python bindings for the XML Security Library.</li>
 <li><code>lxml</code>: Python bindings for the libxml2 and libxslt libraries.</li>
 <li><code>isodate</code>: An ISO 8601 date/time/duration parser and formatter</li>
