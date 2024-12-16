@@ -160,6 +160,10 @@ def post_login():
                     )
                 )
 
+                # Before User creation
+                for item in plugins.PluginImplementations(ICKANSAML):
+                    item.saml_before_user_create(mapped_data, user_dict)
+
                 new_user = tk.get_action("user_create")(
                     {"ignore_auth": True}, user_dict
                 )

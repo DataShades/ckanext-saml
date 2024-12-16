@@ -25,3 +25,7 @@ class ICKANSAML(Interface):
     def saml_auth_class(self) -> Optional[OneLogin_Saml2_Auth]:
         """Custom SamlAuthenticator(subclass of OneLogin_Saml2_Auth)"""
         pass
+
+    def saml_before_user_create(self, mapped_data, user_dict):
+        """Update User data before creating the User"""
+        return user_dict
