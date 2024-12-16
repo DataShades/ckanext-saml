@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.3.5](https://github.com/DataShades/ckanext-saml/releases/tag/v0.3.5) - 2024-12-16
+
+<small>[Compare with v0.3.4](https://github.com/DataShades/ckanext-saml/compare/v0.3.4...v0.3.5)</small>
+
+### Features
+
+- add saml_before_user_create method to ICKANSAML interface ([574cea7](https://github.com/DataShades/ckanext-saml/commit/574cea7e46c947bb7df57c00934335d0861b2d1e) by Sergey Motornyuk).
+
 ## [v0.3.4](https://github.com/DataShades/ckanext-saml/releases/tag/v0.3.4) - 2024-09-03
 
 <small>[Compare with v0.3.3](https://github.com/DataShades/ckanext-saml/compare/v0.3.3...v0.3.4)</small>
