@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.3.6](https://github.com/DataShades/ckanext-saml/releases/tag/v0.3.6) - 2025-02-04
+
+<small>[Compare with v0.3.5](https://github.com/DataShades/ckanext-saml/compare/v0.3.5...v0.3.6)</small>
+
+### Features
+
+- add ckan.saml.name_from_response and ckan.saml.user_fields_trigger_update options ([3f2e0e2](https://github.com/DataShades/ckanext-saml/commit/3f2e0e2960db4e30b14c130b6cb3fcff5ec887dc) by Sergey Motornyuk).
+
 ## [v0.3.5](https://github.com/DataShades/ckanext-saml/releases/tag/v0.3.5) - 2024-12-16
 
 <small>[Compare with v0.3.4](https://github.com/DataShades/ckanext-saml/compare/v0.3.4...v0.3.5)</small>
