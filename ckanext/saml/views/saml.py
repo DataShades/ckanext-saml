@@ -145,7 +145,8 @@ def post_login():
                 )
             else:
                 user_dict = {
-                    "name": _get_random_username_from_email(email),
+                    "name": _get_random_username_from_email(email) if \
+                        not config.use_name_from_response() else mapped_data["name"][0],
                     "email": email,
                     "id": str(uuid.uuid4()),
                     "password": str(uuid.uuid4()),
@@ -201,7 +202,7 @@ def post_login():
     saml_user.attributes = mapped_data
 
     # Compare User data if update is needed.
-    check_fields = ["fullname"]
+    check_fields = config.user_fields_trigger_update()
     update_dict = {}
 
     for field in check_fields:

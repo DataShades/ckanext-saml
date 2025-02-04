@@ -157,6 +157,30 @@ to claim it additionally from the IdP.
 
 -----
 
+### Name from Response
+
+**`ckan.saml.name_from_response`** [__optional__]
+
+Set to ``true`` if you want the User name be taken from the Response instead of generating random one.
+
+**Type**: `bool`
+
+**Default**: `false`
+
+-----
+
+### Fields trigger User update
+
+**`ckan.saml.user_fields_trigger_update`** [__optional__]
+
+By default, when User is logging in, the User update action is called only in case if ``fullname`` of the User from the response is updated. To extended this list, you can provide fields separated by whitespace, for example  ``fullname name givename``.
+
+**Type**: `string`
+
+**Default**: `fullname`
+
+-----
+
 ### Path to error TPL
 
 **`ckanext.saml.error_template`** [__optional__]
