@@ -128,4 +128,4 @@ def use_name_from_response() -> bool:
 
 
 def user_fields_trigger_update() -> list:
-    return tk.config.get(CONFIG_NAME_FROM_RESPONSE, DEFAULT_NAME_FROM_RESPONSE).split()
+    return tk.config.get(CONFIG_USER_FIELDS_TRIGGER_UPDATE, DEFAULT_USER_FIELDS_TRIGGER_UPDATE).split()
