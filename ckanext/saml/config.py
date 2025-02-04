@@ -46,6 +46,13 @@ DEFAULT_USE_NAMEID_AS_EMAIL = False
 CONFIG_TTL = "ckanext.saml.session.ttl"
 DEFAULT_TTL = 30 * 24 * 3600
 
+CONFIG_NAME_FROM_RESPONSE = "ckan.saml.name_from_response"
+DEFAULT_NAME_FROM_RESPONSE = False
+
+CONFIG_USER_FIELDS_TRIGGER_UPDATE = "ckan.saml.user_fields_trigger_update"
+DEFAULT_USER_FIELDS_TRIGGER_UPDATE = "fullname"
+
+
 def reactivate_deleted_account() -> bool:
     return tk.asbool(tk.config.get(CONFIG_REACTIVATE, DEFAULT_REACTIVATE))
 
@@ -112,3 +119,13 @@ def use_nameid_as_email() -> bool:
     return tk.asbool(
         tk.config.get(CONFIG_USE_NAMEID_AS_EMAIL, DEFAULT_USE_NAMEID_AS_EMAIL)
     )
+
+
+def use_name_from_response() -> bool:
+    return tk.asbool(
+        tk.config.get(CONFIG_NAME_FROM_RESPONSE, DEFAULT_NAME_FROM_RESPONSE)
+    )
+
+
+def user_fields_trigger_update() -> list:
+    return tk.config.get(CONFIG_NAME_FROM_RESPONSE, DEFAULT_NAME_FROM_RESPONSE).split()
