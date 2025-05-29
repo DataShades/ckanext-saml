@@ -325,5 +325,5 @@ def saml_login():
 
 def _destination() -> str:
     dynamic = tk.request.args.get('came_from', '')
-    static = tk.config.get('ckan.route_after_login', 'dashboard.index')
+    static = tk.config.get('ckan.auth.route_after_login', 'dashboard.index')
     return dynamic or static
