@@ -20,9 +20,7 @@ from ckanext.saml import utils, config
 
 
 log = logging.getLogger(__name__)
-use_nameid_as_email = tk.asbool(
-    tk.config.get("ckan.saml_use_nameid_as_email", False)
-)
+use_nameid_as_email = tk.asbool(tk.config.get("ckan.saml_use_nameid_as_email", False))
 
 saml_details = [
     "samlUserdata",
@@ -38,9 +36,7 @@ saml = Blueprint("saml", __name__)
 def get_bp():
     saml.add_url_rule(config.slo_path(), view_func=post_logout)
 
-    saml.add_url_rule(
-        config.sso_path(), view_func=post_login, methods=["POST"]
-    )
+    saml.add_url_rule(config.sso_path(), view_func=post_login, methods=["POST"])
 
     return saml
 
@@ -49,7 +45,7 @@ def post_logout():
     if "SAMLResponse" in tk.request.args:
         log.debug(
             "SAML2 Logout response: %s",
-            utils.decode_saml_response(tk.request.args["SAMLResponse"])
+            utils.decode_saml_response(tk.request.args["SAMLResponse"]),
         )
     return tk.h.redirect_to("user.logout")
 
@@ -105,48 +101,34 @@ def post_login():
         "If you are experiencing login issues, make sure that email is present"
         " in the mapped data"
     )
-    saml_user = (
-        model.Session.query(User).filter(User.name_id == nameid).first()
-    )
+    saml_user = model.Session.query(User).filter(User.name_id == nameid).first()
 
     if not saml_user:
-        log.debug(
-            "No User with NAMEID '{0}' was found. Creating one.".format(nameid)
-        )
+        log.debug("No User with NAMEID '{0}' was found. Creating one.".format(nameid))
 
         try:
-            email = (
-                nameid
-                if config.use_nameid_as_email()
-                else mapped_data["email"][0]
-            )
+            email = nameid if config.use_nameid_as_email() else mapped_data["email"][0]
 
-            log.debug(
-                'Check if User with "{0}" email already exists.'.format(email)
-            )
+            log.debug('Check if User with "{0}" email already exists.'.format(email))
             user_exist = (
                 model.Session.query(model.User)
-                .filter(
-                    sql_func.lower(model.User.email) == sql_func.lower(email)
-                )
+                .filter(sql_func.lower(model.User.email) == sql_func.lower(email))
                 .first()
             )
 
             if user_exist:
                 log.debug(
-                    'Found User "{0}" that has same email.'.format(
-                        user_exist.name
-                    )
+                    'Found User "{0}" that has same email.'.format(user_exist.name)
                 )
                 new_user = user_exist.as_dict()
                 log_message = (
-                    "User is being detected with such NameID, adding to Saml2"
-                    " table..."
+                    "User is being detected with such NameID, adding to Saml2 table..."
                 )
             else:
                 user_dict = {
-                    "name": _get_random_username_from_email(email) if \
-                        not config.use_name_from_response() else mapped_data["name"][0],
+                    "name": _get_random_username_from_email(email)
+                    if not config.use_name_from_response()
+                    else mapped_data["name"][0],
                     "email": email,
                     "id": str(uuid.uuid4()),
                     "password": str(uuid.uuid4()),
@@ -156,9 +138,7 @@ def post_login():
                 }
 
                 log.debug(
-                    "Trying to create User with name '{0}'".format(
-                        user_dict["name"]
-                    )
+                    "Trying to create User with name '{0}'".format(user_dict["name"])
                 )
 
                 # Before User creation
@@ -172,15 +152,11 @@ def post_login():
 
             # Make sure that User ID is not already in saml2_user table
             saml_user = (
-                model.Session.query(User)
-                .filter(User.id == new_user["id"])
-                .first()
+                model.Session.query(User).filter(User.id == new_user["id"]).first()
             )
 
             if saml_user:
-                log.debug(
-                    "Found existing row with such User ID, updating NAMEID..."
-                )
+                log.debug("Found existing row with such User ID, updating NAMEID...")
                 saml_user.name_id = nameid
             else:
                 saml_user = User(
@@ -207,28 +183,22 @@ def post_login():
 
     for field in check_fields:
         if mapped_data.get(field):
-            updated = (
-                True if mapped_data[field][0] != user_dict[field] else False
-            )
+            updated = True if mapped_data[field][0] != user_dict[field] else False
             if updated:
                 update_dict[field] = mapped_data[field][0]
 
     if user_dict["state"] == "deleted":
         if config.reactivate_deleted_account():
             update_dict["state"] = "active"
-            log.debug(
-                "Restore deleted user %s",
-                user_dict["name"]
-            )
+            log.debug("Restore deleted user %s", user_dict["name"])
 
         else:
-            log.warning(
-                "Blocked login attempt for deleted user %s",
-                user_dict["name"]
-            )
+            log.warning("Blocked login attempt for deleted user %s", user_dict["name"])
 
             h.flash_error(
-                tk._("Your account was deleted. Please, contact the administrator if you want to restore it")
+                tk._(
+                    "Your account was deleted. Please, contact the administrator if you want to restore it"
+                )
             )
             return tk.abort(403)
 
@@ -236,17 +206,27 @@ def post_login():
         for item in update_dict:
             user_dict[item] = update_dict[item]
 
-        tk.get_action("user_update")({"ignore_auth": True}, user_dict)
+        # username can be changed only if user is in pending state
+        user.state = "pending"
+        try:
+            tk.get_action("user_update")({"ignore_auth": True}, user_dict)
+        except tk.ValidationError:
+            log.exception("SSO user cannot be updated")
+            h.flash_error(
+                "This account is not available. Contact portal administration for support."
+            )
+            return h.redirect_to(h.url_for("saml.saml_login"))
+
     model.Session.commit()
 
     # Roles and Organizations
     for item in plugins.PluginImplementations(ICKANSAML):
         item.roles_and_organizations(mapped_data, auth, user)
 
-
     if tk.check_ckan_version("2.10"):
-        duration_time = timedelta(milliseconds=int(tk.config.get(
-                config.CONFIG_TTL, config.DEFAULT_TTL)))
+        duration_time = timedelta(
+            milliseconds=int(tk.config.get(config.CONFIG_TTL, config.DEFAULT_TTL))
+        )
 
         tk.login_user(user, duration=duration_time)
     else:
@@ -263,6 +243,7 @@ def post_login():
         return h.redirect_to(req["post_data"]["RelayState"])
 
     return tk.redirect_to(_destination())
+
 
 @saml.route("/saml/metadata")
 def metadata():
@@ -295,11 +276,7 @@ def saml_login():
 
         if tk.asbool(tk.request.args.get("sso")) or config.unconditional_login():
             saml_relaystate = tk.config.get("ckan.saml_relaystate", None)
-            redirect = (
-                saml_relaystate
-                if saml_relaystate
-                else _destination()
-            )
+            redirect = saml_relaystate if saml_relaystate else _destination()
             if tk.request.args.get("redirect"):
                 redirect = tk.request.args.get("redirect")
 
@@ -315,15 +292,13 @@ def saml_login():
                 " at the end of the URL."
             )
     except Exception as e:
-        h.flash_error(
-            "SAML: An issue appeared while validating settings file."
-        )
+        h.flash_error("SAML: An issue appeared while validating settings file.")
         log.error("{}".format(e))
 
     return h.redirect_to(h.url_for("user.login"))
 
 
 def _destination() -> str:
-    dynamic = tk.request.args.get('came_from', '')
-    static = tk.config.get('ckan.auth.route_after_login', 'dashboard.index')
+    dynamic = tk.request.args.get("came_from", "")
+    static = tk.config.get("ckan.auth.route_after_login", "dashboard.index")
     return dynamic or static
