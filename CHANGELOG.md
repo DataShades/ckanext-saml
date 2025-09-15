@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.3.10](https://github.com/DataShades/ckanext-saml/releases/tag/v0.3.10) - 2025-09-15
+
+<small>[Compare with v0.3.9](https://github.com/DataShades/ckanext-saml/compare/v0.3.9...v0.3.10)</small>
+
+### Features
+
+- debug error reason during assertion ([681ea99](https://github.com/DataShades/ckanext-saml/commit/681ea99791498081bac48503c43bfe1e3d445b94) by Sergey Motornyuk).
+
+## [v0.3.9](https://github.com/DataShades/ckanext-saml/releases/tag/v0.3.9) - 2025-06-11
+
+<small>[Compare with v0.3.8](https://github.com/DataShades/ckanext-saml/compare/v0.3.8...v0.3.9)</small>
+
+### Bug Fixes
+
+- cannot change username during synchronization ([e997968](https://github.com/DataShades/ckanext-saml/commit/e99796891cca489b2757a394964a5cf73f10a875) by Sergey Motornyuk).
+
+## [v0.3.8](https://github.com/DataShades/ckanext-saml/releases/tag/v0.3.8) - 2025-05-29
+
+<small>[Compare with v0.3.7](https://github.com/DataShades/ckanext-saml/compare/v0.3.7...v0.3.8)</small>
+
+### Bug Fixes
+
+- fix after login redirection ([415f2b6](https://github.com/DataShades/ckanext-saml/commit/415f2b673dd6f320770a1b83e91b58842a7679bb) by alexmorev).
+
+## [v0.3.7](https://github.com/DataShades/ckanext-saml/releases/tag/v0.3.7) - 2025-02-04
+
+<small>[Compare with v0.3.6](https://github.com/DataShades/ckanext-saml/compare/v0.3.6...v0.3.7)</small>
+
 ## [v0.3.6](https://github.com/DataShades/ckanext-saml/releases/tag/v0.3.6) - 2025-02-04
 
 <small>[Compare with v0.3.5](https://github.com/DataShades/ckanext-saml/compare/v0.3.5...v0.3.6)</small>
