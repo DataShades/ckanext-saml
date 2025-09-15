@@ -1,6 +1,7 @@
 import pytest
 
 import ckan.model as model
+
 from ckanext.saml.model import User
 
 

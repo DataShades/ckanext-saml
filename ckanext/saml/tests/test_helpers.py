@@ -1,6 +1,7 @@
+import pytest
+
 import ckan.model as model
 import ckan.plugins.toolkit as tk
-import pytest
 
 import ckanext.saml.helpers as h
 from ckanext.saml import config

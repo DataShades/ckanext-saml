@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 from typing import Optional
 
-from ckan.plugins import Interface
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
+
+from ckan.plugins import Interface
 
 
 class ICKANSAML(Interface):
@@ -19,13 +19,13 @@ class ICKANSAML(Interface):
         return mapped_data
 
     def roles_and_organizations(self, mapped_data, auth, user):
-        """Map Roles and assign User to Organizations"""
+        """Map Roles and assign User to Organizations."""
         pass
 
     def saml_auth_class(self) -> Optional[OneLogin_Saml2_Auth]:
-        """Custom SamlAuthenticator(subclass of OneLogin_Saml2_Auth)"""
+        """Custom SamlAuthenticator(subclass of OneLogin_Saml2_Auth)."""
         pass
 
     def saml_before_user_create(self, mapped_data, user_dict):
-        """Update User data before creating the User"""
+        """Update User data before creating the User."""
         return user_dict

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import Optional
 
 import ckan.plugins.toolkit as tk
@@ -65,7 +66,7 @@ def slo_path() -> str:
     return tk.config.get(CONFIG_SLO_PATH, DEFAULT_SLO_PATH)
 
 
-def error_template() -> Optional[str]:
+def error_template() -> str | None:
     return tk.config.get(CONFIG_ERROR_TPL)
 
 
@@ -107,7 +108,7 @@ def use_forwarded_host() -> bool:
     )
 
 
-def static_host() -> Optional[str]:
+def static_host() -> str | None:
     return tk.config.get(CONFIG_STATIC_HOST, DEFAULT_STATIC_HOST)
 
 

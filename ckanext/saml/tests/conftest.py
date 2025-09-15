@@ -1,6 +1,7 @@
 import pytest
-from ckan.tests import factories
 from pytest_factoryboy import register
+
+from ckan.tests import factories
 
 
 @pytest.fixture

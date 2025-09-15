@@ -4,20 +4,19 @@ import logging
 import uuid
 from datetime import datetime, timedelta
 
-import ckan.lib.helpers as h
-from ckan.logic import functools
-import ckan.model as model
-import ckan.plugins as plugins
-import ckan.plugins.toolkit as tk
-from ckan.logic.action.create import _get_random_username_from_email
 from flask import Blueprint, make_response, session
-
 from sqlalchemy import func as sql_func
 
+import ckan.lib.helpers as h
+import ckan.model as model
+import ckan.plugins as p
+import ckan.plugins.toolkit as tk
+from ckan.logic import functools
+from ckan.logic.action.create import _get_random_username_from_email
+
+from ckanext.saml import config, utils
 from ckanext.saml.interfaces import ICKANSAML
 from ckanext.saml.model.user import User
-from ckanext.saml import utils, config
-
 
 log = logging.getLogger(__name__)
 use_nameid_as_email = tk.asbool(tk.config.get("ckan.saml_use_nameid_as_email", False))
@@ -93,9 +92,9 @@ def post_login():
         field = auth.get_attribute(value)
         if field:
             mapped_data[key] = field
-    log.debug("NAMEID: {0}".format(nameid))
+    log.debug(f"NAMEID: {nameid}")
 
-    for item in plugins.PluginImplementations(ICKANSAML):
+    for item in p.PluginImplementations(ICKANSAML):
         item.after_mapping(mapped_data, auth)
     log.debug("Client data: %s", attr_mapper)
     log.debug("Mapped data: %s", mapped_data)
@@ -106,12 +105,12 @@ def post_login():
     saml_user = model.Session.query(User).filter(User.name_id == nameid).first()
 
     if not saml_user:
-        log.debug("No User with NAMEID '{0}' was found. Creating one.".format(nameid))
+        log.debug(f"No User with NAMEID '{nameid}' was found. Creating one.")
 
         try:
             email = nameid if config.use_nameid_as_email() else mapped_data["email"][0]
 
-            log.debug('Check if User with "{0}" email already exists.'.format(email))
+            log.debug(f'Check if User with "{email}" email already exists.')
             user_exist = (
                 model.Session.query(model.User)
                 .filter(sql_func.lower(model.User.email) == sql_func.lower(email))
@@ -120,7 +119,7 @@ def post_login():
 
             if user_exist:
                 log.debug(
-                    'Found User "{0}" that has same email.'.format(user_exist.name)
+                    f'Found User "{user_exist.name}" that has same email.'
                 )
                 new_user = user_exist.as_dict()
                 log_message = (
@@ -140,11 +139,11 @@ def post_login():
                 }
 
                 log.debug(
-                    "Trying to create User with name '{0}'".format(user_dict["name"])
+                    "Trying to create User with name '{}'".format(user_dict["name"])
                 )
 
                 # Before User creation
-                for item in plugins.PluginImplementations(ICKANSAML):
+                for item in p.PluginImplementations(ICKANSAML):
                     item.saml_before_user_create(mapped_data, user_dict)
 
                 new_user = tk.get_action("user_create")(
@@ -222,7 +221,7 @@ def post_login():
     model.Session.commit()
 
     # Roles and Organizations
-    for item in plugins.PluginImplementations(ICKANSAML):
+    for item in p.PluginImplementations(ICKANSAML):
         item.roles_and_organizations(mapped_data, auth, user)
 
     if tk.check_ckan_version("2.10"):
@@ -241,7 +240,7 @@ def post_login():
         tk.g.user = user.name
 
     if "RelayState" in req["post_data"] and req["post_data"]["RelayState"]:
-        log.info('Redirecting to "{0}"'.format(req["post_data"]["RelayState"]))
+        log.info('Redirecting to "{}"'.format(req["post_data"]["RelayState"]))
         return h.redirect_to(req["post_data"]["RelayState"])
 
     return tk.redirect_to(_destination())
@@ -295,7 +294,7 @@ def saml_login():
             )
     except Exception as e:
         h.flash_error("SAML: An issue appeared while validating settings file.")
-        log.error("{}".format(e))
+        log.error(f"{e}")
 
     return h.redirect_to(h.url_for("user.login"))
 

@@ -8,10 +8,11 @@ from typing import Any, Optional
 import ckan.model as model
 import ckan.plugins.toolkit as tk
 
+from ckanext.toolbelt.decorators import Collector
 
 from ckanext.saml.model.user import User
-from ckanext.toolbelt.decorators import Collector
-from . import utils, config
+
+from . import config, utils
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ helper, get_helpers = Collector("saml").split()
 
 
 @helper
-def logout_url(name_id: Optional[str] = None) -> str:
+def logout_url(name_id: str | None = None) -> str:
     req = utils.prepare_from_flask_request()
     auth = utils.make_auth(req)
 
@@ -65,7 +66,7 @@ def attr_mapper():
         mapper = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mapper)
     except Exception as e:
-        log.error("{0}".format(e))
+        log.error(f"{e}")
         return None
 
     return mapper.MAP

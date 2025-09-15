@@ -1,13 +1,12 @@
-"""add_foreign_key_constraint_on_user_id
+"""add_foreign_key_constraint_on_user_id.
 
 Revision ID: 25dc326c059e
 Revises: 92745f8a6168
 Create Date: 2022-07-26 15:01:52.311445
 
 """
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "25dc326c059e"

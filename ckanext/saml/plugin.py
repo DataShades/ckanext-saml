@@ -2,23 +2,24 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
-import ckan.plugins as plugins
-import ckan.plugins.toolkit as tk
 from flask import session
 
+import ckan.plugins as p
+import ckan.plugins.toolkit as tk
+
+import ckanext.saml.config as config
 from ckanext.saml.cli import get_commnads
 from ckanext.saml.helpers import get_helpers
 from ckanext.saml.logic.action import get_actions
 from ckanext.saml.views import saml
-import ckanext.saml.config as config
 
 
-class SamlPlugin(plugins.SingletonPlugin):
-    plugins.implements(plugins.IActions)
-    plugins.implements(plugins.IConfigurer)
-    plugins.implements(plugins.IBlueprint)
-    plugins.implements(plugins.IClick)
-    plugins.implements(plugins.ITemplateHelpers)
+class SamlPlugin(p.SingletonPlugin):
+    p.implements(p.IActions)
+    p.implements(p.IConfigurer)
+    p.implements(p.IBlueprint)
+    p.implements(p.IClick)
+    p.implements(p.ITemplateHelpers)
 
     # IActions
     def get_actions(self):
@@ -36,7 +37,7 @@ class SamlPlugin(plugins.SingletonPlugin):
 
     if not tk.check_ckan_version("2.10"):
         # specifically for ckan 2.9 and lower versions
-        plugins.implements(plugins.IAuthenticator, inherit=True)
+        p.implements(p.IAuthenticator, inherit=True)
         # IAuthenticator
 
         def identify(self):

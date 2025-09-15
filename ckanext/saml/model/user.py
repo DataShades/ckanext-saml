@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-import ckan.model as model
 from sqlalchemy import Boolean, Column, UnicodeText
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, backref
-from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import backref, relationship
+from sqlalchemy.sql.schema import ForeignKey
+
+import ckan.model as model
 
 Base = declarative_base(metadata=model.meta.metadata)
 

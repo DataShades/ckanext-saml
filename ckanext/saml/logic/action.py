@@ -3,11 +3,12 @@ from __future__ import annotations
 import json
 from typing import Any
 
-import ckan.plugins.toolkit as tk
-from ckan.lib.redis import connect_to_redis
 from onelogin.saml2.idp_metadata_parser import (
     OneLogin_Saml2_IdPMetadataParser as Parser,
 )
+
+import ckan.plugins.toolkit as tk
+from ckan.lib.redis import connect_to_redis
 
 CONFIG_URL = "ckanext.saml.metadata.url"
 
@@ -22,7 +23,7 @@ def get_actions():
 def _idp_key():
     """Cache key for IdP details."""
     site_id = tk.config["ckan.site_id"]
-    return "ckan:{}:saml:idp".format(site_id)
+    return f"ckan:{site_id}:saml:idp"
 
 
 def _read_remote_metadata(path_or_url: str):
@@ -41,7 +42,7 @@ def idp_refresh(context: dict[str, Any], data_dict: dict[str, Any]):
 
     if not url:
         raise tk.ObjectNotFound(
-            "Metadata URL is not configured: {}".format(CONFIG_URL)
+            f"Metadata URL is not configured: {CONFIG_URL}"
         )
     meta = _read_remote_metadata(url)
 

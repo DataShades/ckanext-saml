@@ -9,8 +9,8 @@ from onelogin.saml2.auth import OneLogin_Saml2_Auth, OneLogin_Saml2_Utils
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
 
-from .interfaces import ICKANSAML
 from . import config
+from .interfaces import ICKANSAML
 
 
 def prepare_from_flask_request() -> dict[str, Any]:
