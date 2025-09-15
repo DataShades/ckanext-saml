@@ -36,9 +36,7 @@ def is_saml_user(name: str) -> bool:
     if not user:
         return False
 
-    return model.Session.query(
-        model.Session.query(User).filter_by(id=user.id).exists()
-    ).scalar()
+    return model.Session.query(model.Session.query(User).filter_by(id=user.id).exists()).scalar()
 
 
 @helper
@@ -58,9 +56,7 @@ def attr_mapper():
     try:
         spec = importlib.util.spec_from_file_location(
             "module.name",
-            tk.h.saml_folder_path()
-            + "/attributemaps/"
-            + tk.config.get("ckan.saml_custom_attr_map", "mapper.py"),
+            tk.h.saml_folder_path() + "/attributemaps/" + tk.config.get("ckan.saml_custom_attr_map", "mapper.py"),
         )
 
         mapper = importlib.util.module_from_spec(spec)
@@ -89,13 +85,11 @@ def settings() -> dict[str, Any]:
     for k, v in tk.config.items():
         if not k.startswith(prefix):
             continue
-        settings_str = settings_str.replace(f"<{k[len(prefix):]}>", v)
+        settings_str = settings_str.replace(f"<{k[len(prefix) :]}>", v)
     settings = json.loads(settings_str)
 
     if config.use_remote_idp():
-        settings["idp"] = tk.get_action("saml_idp_show")(
-            {"ignore_auth": True}, {}
-        )
+        settings["idp"] = tk.get_action("saml_idp_show")({"ignore_auth": True}, {})
 
     settings.setdefault("custom_base_path", custom_folder)
     return settings

@@ -72,20 +72,14 @@ def post_login():
     nameid = auth.get_nameid()
 
     if not nameid:
-        log.error(
-            "Something went wrong, no NAMEID was found, "
-            "redirecting back to to login page."
-        )
+        log.error("Something went wrong, no NAMEID was found, redirecting back to to login page.")
         return h.redirect_to(h.url_for("user.login"))
 
     mapped_data = {}
     attr_mapper = tk.h.saml_attr_mapper()
 
     if not attr_mapper:
-        log.error(
-            'User mapping is empty, please set "ckan.saml_custom_attr_map"'
-            " param in config."
-        )
+        log.error('User mapping is empty, please set "ckan.saml_custom_attr_map" param in config.')
         return h.redirect_to(h.url_for("user.login"))
 
     for key, value in attr_mapper.items():
@@ -98,10 +92,7 @@ def post_login():
         item.after_mapping(mapped_data, auth)
     log.debug("Client data: %s", attr_mapper)
     log.debug("Mapped data: %s", mapped_data)
-    log.debug(
-        "If you are experiencing login issues, make sure that email is present"
-        " in the mapped data"
-    )
+    log.debug("If you are experiencing login issues, make sure that email is present in the mapped data")
     saml_user = model.Session.query(User).filter(User.name_id == nameid).first()
 
     if not saml_user:
@@ -118,13 +109,9 @@ def post_login():
             )
 
             if user_exist:
-                log.debug(
-                    f'Found User "{user_exist.name}" that has same email.'
-                )
+                log.debug(f'Found User "{user_exist.name}" that has same email.')
                 new_user = user_exist.as_dict()
-                log_message = (
-                    "User is being detected with such NameID, adding to Saml2 table..."
-                )
+                log_message = "User is being detected with such NameID, adding to Saml2 table..."
             else:
                 user_dict = {
                     "name": _get_random_username_from_email(email)
@@ -133,28 +120,20 @@ def post_login():
                     "email": email,
                     "id": str(uuid.uuid4()),
                     "password": str(uuid.uuid4()),
-                    "fullname": mapped_data["fullname"][0]
-                    if mapped_data.get("fullname")
-                    else "",
+                    "fullname": mapped_data["fullname"][0] if mapped_data.get("fullname") else "",
                 }
 
-                log.debug(
-                    "Trying to create User with name '{}'".format(user_dict["name"])
-                )
+                log.debug("Trying to create User with name '{}'".format(user_dict["name"]))
 
                 # Before User creation
                 for item in p.PluginImplementations(ICKANSAML):
                     item.saml_before_user_create(mapped_data, user_dict)
 
-                new_user = tk.get_action("user_create")(
-                    {"ignore_auth": True}, user_dict
-                )
+                new_user = tk.get_action("user_create")({"ignore_auth": True}, user_dict)
                 log_message = "User succesfully created. Authorizing..."
 
             # Make sure that User ID is not already in saml2_user table
-            saml_user = (
-                model.Session.query(User).filter(User.id == new_user["id"]).first()
-            )
+            saml_user = model.Session.query(User).filter(User.id == new_user["id"]).first()
 
             if saml_user:
                 log.debug("Found existing row with such User ID, updating NAMEID...")
@@ -196,11 +175,7 @@ def post_login():
         else:
             log.warning("Blocked login attempt for deleted user %s", user_dict["name"])
 
-            h.flash_error(
-                tk._(
-                    "Your account was deleted. Please, contact the administrator if you want to restore it"
-                )
-            )
+            h.flash_error(tk._("Your account was deleted. Please, contact the administrator if you want to restore it"))
             return tk.abort(403)
 
     if update_dict:
@@ -213,9 +188,7 @@ def post_login():
             tk.get_action("user_update")({"ignore_auth": True}, user_dict)
         except tk.ValidationError:
             log.exception("SSO user cannot be updated")
-            h.flash_error(
-                "This account is not available. Contact portal administration for support."
-            )
+            h.flash_error("This account is not available. Contact portal administration for support.")
             return h.redirect_to(h.url_for("saml.saml_login"))
 
     model.Session.commit()
@@ -225,9 +198,7 @@ def post_login():
         item.roles_and_organizations(mapped_data, auth, user)
 
     if tk.check_ckan_version("2.10"):
-        duration_time = timedelta(
-            milliseconds=int(tk.config.get(config.CONFIG_TTL, config.DEFAULT_TTL))
-        )
+        duration_time = timedelta(milliseconds=int(tk.config.get(config.CONFIG_TTL, config.DEFAULT_TTL)))
 
         tk.login_user(user, duration=duration_time)
     else:

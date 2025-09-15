@@ -48,8 +48,7 @@ class SamlPlugin(p.SingletonPlugin):
             last_login = session.get("samlLastLogin", now)
             diff = now - last_login
 
-            ttl = tk.asint(tk.config.get(
-                config.CONFIG_TTL, config.DEFAULT_TTL))
+            ttl = tk.asint(tk.config.get(config.CONFIG_TTL, config.DEFAULT_TTL))
             if diff < timedelta(seconds=ttl):
                 tk.g.user = session["samlCKANuser"]
 

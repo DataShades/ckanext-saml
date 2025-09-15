@@ -87,9 +87,7 @@ def folder_path() -> str:
 
 
 def use_remote_idp() -> bool:
-    return tk.asbool(
-        tk.config.get(CONFIG_USE_REMOTE_IDP, DEFAULT_USE_REMOTE_IDP)
-    )
+    return tk.asbool(tk.config.get(CONFIG_USE_REMOTE_IDP, DEFAULT_USE_REMOTE_IDP))
 
 
 def use_dynamic_config() -> bool:
@@ -97,15 +95,11 @@ def use_dynamic_config() -> bool:
 
 
 def unconditional_login() -> bool:
-    return tk.asbool(
-        tk.config.get(CONFIG_UNCONDITIONAL_LOGIN, DEFAULT_UNCONDITIONAL_LOGIN)
-    )
+    return tk.asbool(tk.config.get(CONFIG_UNCONDITIONAL_LOGIN, DEFAULT_UNCONDITIONAL_LOGIN))
 
 
 def use_forwarded_host() -> bool:
-    return tk.asbool(
-        tk.config.get(CONFIG_USE_FORWARDED_HOST, DEFAULT_USE_FORWARDED_HOST)
-    )
+    return tk.asbool(tk.config.get(CONFIG_USE_FORWARDED_HOST, DEFAULT_USE_FORWARDED_HOST))
 
 
 def static_host() -> str | None:
@@ -117,15 +111,11 @@ def https() -> str:
 
 
 def use_nameid_as_email() -> bool:
-    return tk.asbool(
-        tk.config.get(CONFIG_USE_NAMEID_AS_EMAIL, DEFAULT_USE_NAMEID_AS_EMAIL)
-    )
+    return tk.asbool(tk.config.get(CONFIG_USE_NAMEID_AS_EMAIL, DEFAULT_USE_NAMEID_AS_EMAIL))
 
 
 def use_name_from_response() -> bool:
-    return tk.asbool(
-        tk.config.get(CONFIG_NAME_FROM_RESPONSE, DEFAULT_NAME_FROM_RESPONSE)
-    )
+    return tk.asbool(tk.config.get(CONFIG_NAME_FROM_RESPONSE, DEFAULT_NAME_FROM_RESPONSE))
 
 
 def user_fields_trigger_update() -> list:

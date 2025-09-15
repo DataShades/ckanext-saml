@@ -28,7 +28,7 @@ def _idp_key():
 
 def _read_remote_metadata(path_or_url: str):
     if path_or_url.startswith("file://"):
-        with open(path_or_url[len("file://"):]) as src:
+        with open(path_or_url[len("file://") :]) as src:
             return Parser.parse(src.read())
 
     return Parser.parse_remote(path_or_url)
@@ -41,9 +41,7 @@ def idp_refresh(context: dict[str, Any], data_dict: dict[str, Any]):
     url = data_dict.get("url", tk.config.get(CONFIG_URL))
 
     if not url:
-        raise tk.ObjectNotFound(
-            f"Metadata URL is not configured: {CONFIG_URL}"
-        )
+        raise tk.ObjectNotFound(f"Metadata URL is not configured: {CONFIG_URL}")
     meta = _read_remote_metadata(url)
 
     cache = connect_to_redis()
