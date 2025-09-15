@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 from onelogin.saml2.auth import OneLogin_Saml2_Auth, OneLogin_Saml2_Utils
 
-import ckan.plugins as plugins
+import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 
 from . import config
@@ -44,8 +44,8 @@ def prepare_from_flask_request() -> dict[str, Any]:
 
 
 def make_auth(req: dict[str, Any]) -> OneLogin_Saml2_Auth:
-    for p in plugins.PluginImplementations(ICKANSAML):
-        Auth = p.saml_auth_class()
+    for plugin in p.PluginImplementations(ICKANSAML):
+        Auth = plugin.saml_auth_class()
         if Auth:
             break
     else:
