@@ -59,7 +59,9 @@ def post_login():
     errors = auth.get_errors()
 
     if errors:
-        log.error("{}".format(errors))
+        log.error("Cannot process IdP response: %s", errors)
+        log.error("Last error reason: %s", auth.get_last_error_reason())
+
         error_tpl = config.error_template()
         if error_tpl:
             return tk.render(error_tpl, {"errors": errors})
