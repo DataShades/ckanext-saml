@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.4.0](https://github.com/DataShades/ckanext-saml/releases/tag/v0.4.0) - 2025-10-20
+
+<small>[Compare with v0.3.10](https://github.com/DataShades/ckanext-saml/compare/v0.3.10...v0.4.0)</small>
+
+### Features
+
+- drop support of CKAN <v2.10 ([5169afe](https://github.com/DataShades/ckanext-saml/commit/5169afeeccededcd531dc996c850f6010aee541f) by Sergey Motornyuk).
+- config declarations and `force_authn` flag ([06fced3](https://github.com/DataShades/ckanext-saml/commit/06fced389b909ad62460b39fae08682b0c73a7d3) by Sergey Motornyuk).
+
 ## [v0.3.10](https://github.com/DataShades/ckanext-saml/releases/tag/v0.3.10) - 2025-09-15
 
 <small>[Compare with v0.3.9](https://github.com/DataShades/ckanext-saml/compare/v0.3.9...v0.3.10)</small>
