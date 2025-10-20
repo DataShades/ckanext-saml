@@ -14,6 +14,7 @@ from ckanext.saml.logic.action import get_actions
 from ckanext.saml.views import saml
 
 
+@tk.blanket.config_declarations
 class SamlPlugin(p.SingletonPlugin):
     p.implements(p.IActions)
     p.implements(p.IConfigurer)
@@ -48,7 +49,7 @@ class SamlPlugin(p.SingletonPlugin):
             last_login = session.get("samlLastLogin", now)
             diff = now - last_login
 
-            ttl = tk.asint(tk.config.get(config.CONFIG_TTL, config.DEFAULT_TTL))
+            ttl = config.ttl()
             if diff < timedelta(seconds=ttl):
                 tk.g.user = session["samlCKANuser"]
 

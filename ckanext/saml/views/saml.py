@@ -198,7 +198,7 @@ def post_login():
         item.roles_and_organizations(mapped_data, auth, user)
 
     if tk.check_ckan_version("2.10"):
-        duration_time = timedelta(milliseconds=int(tk.config.get(config.CONFIG_TTL, config.DEFAULT_TTL)))
+        duration_time = timedelta(milliseconds=config.ttl())
 
         tk.login_user(user, duration=duration_time)
     else:
@@ -256,7 +256,8 @@ def saml_login():
                 return h.redirect_to(redirect)
 
             log.info("Redirect to SAML IdP.")
-            return h.redirect_to(auth.login(return_to=redirect))
+            auth_url = auth.login(return_to=redirect, force_authn=config.force_authn())
+            return h.redirect_to(auth_url)
         else:
             log.warning(
                 "No arguments been provided in this URL. If you want to make"

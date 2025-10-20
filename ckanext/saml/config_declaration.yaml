@@ -1,0 +1,110 @@
+version: 1
+groups:
+  - annotation: ckanext-saml
+    options:
+
+      - key: ckan.saml.user_fields_trigger_update
+        type: list
+        default:
+          - fullname
+        description: |
+          A list of CKAN user fields that, when present in the SAML response,
+          will trigger an update of the corresponding CKAN user profile fields.
+
+      - key: ckan.saml.name_from_response
+        type: bool
+        description: |
+          If set to true, CKAN will extract the user's full name from the SAML
+          response and update the CKAN user profile accordingly.
+
+      - key: ckanext.saml.session.ttl
+        type: int
+        default: 2592000
+        description: |
+          The time-to-live (TTL) for SAML sessions in seconds.
+          Default is 30 days (2592000 seconds).
+
+      - key: ckan.saml_use_nameid_as_email
+        type: bool
+        description: |
+          If set to true, CKAN will use the SAML NameID as the user's email
+          address.
+
+      - key: ckan.saml_use_https
+        default: "off"
+        description: |
+          If set to "on", CKAN will use HTTPS URLs for SAML metadata and
+          endpoints. If set to "off", HTTP URLs will be used.
+
+      - key: ckanext.saml.metadata.base_path
+        legacy_key: ckan.saml_custom_base_path
+        default: "/etc/ckan/default/saml"
+        description: |
+          The base path where SAML metadata files are stored.
+
+      - key: ckanext.saml.reactivate_deleted_account
+        type: bool
+        description: |
+          If set to true, deleted CKAN user accounts will be reactivated
+          upon successful SAML authentication.
+
+      - key: ckanext.saml.login_button_text
+        legacy_key: ckan.saml_login_button_text
+        default: "SAML Login"
+        description: |
+          The text to be displayed on the SAML login button on the CKAN login page.
+
+      - key: ckanext.saml.unconditional_login
+        type: bool
+        description: |
+          If set to true, users will be automatically redirected to the SAML
+          Identity Provider (IdP) login page when accessing login page, without
+          needing to click a saml-login button.
+
+      - key: ckanext.saml.use_forwarded_host
+        type: bool
+        description: |
+          If set to true, CKAN will use the
+          X-Forwarded-Host header to determine the host name when generating
+          SAML metadata. This is useful when CKAN is behind a reverse proxy.
+
+      - key: ckanext.saml.static_host
+        description: |
+          The static host URL to be used when generating SAML metadata.
+          This is useful when CKAN is behind a reverse proxy.
+
+      - key: ckanext.saml.metadata.remote_idp
+        type: bool
+        description: |
+          If set to true, the Identity Provider (IdP) metadata will be fetched
+          from a remote URL instead of a local file.
+
+      - key: ckanext.saml.settings.dynamic
+        type: bool
+        description: |
+          If set to true, allows dynamic SAML settings based on variables from
+          config file.
+
+      - key: ckanext.saml.slo_path
+        default: "/slo/post"
+        description: |
+          Path to the SAML Single Logout (SLO) endpoint.
+          This path is relative to the CKAN site URL.
+
+      - key: ckanext.saml.sso_path
+        default: "/sso/post"
+        description: |
+          Path to the SAML Single Sign-On (SSO) endpoint.
+          This path is relative to the CKAN site URL.
+
+      - key: ckanext.saml.error_template
+        description: |
+          Path to a custom error template to be used when SAML errors occur.
+          The path should be relative to the CKAN templates directory.
+
+      - key: ckanext.saml.force_authn
+        type: bool
+        description: |
+          If set to true, the SAML authentication request will include the
+          ForceAuthn attribute, forcing the Identity Provider (IdP) to re-authenticate
+          the user even if they have an active session.

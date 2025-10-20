@@ -124,7 +124,7 @@ self = ["ckanext.saml", ]
 
 
 [tool.pyright]
-expraPaths = [
+extraPaths = [
            "../ckan",
 ]
 pythonVersion = "3.8"
