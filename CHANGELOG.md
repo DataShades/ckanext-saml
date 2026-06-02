@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.4.1](https://github.com/DataShades/ckanext-saml/releases/tag/v0.4.1) - 2026-06-02
+
+<small>[Compare with v0.4.0](https://github.com/DataShades/ckanext-saml/compare/v0.4.0...v0.4.1)</small>
+
+### Bug Fixes
+
+- support SQLAlchemy changes in CKAN 2.12 ([9047879](https://github.com/DataShades/ckanext-saml/commit/9047879e1ed717ebbb528ff5821f60e347925935) by Oleksandr Ivaniuk).
+
 ## [v0.4.0](https://github.com/DataShades/ckanext-saml/releases/tag/v0.4.0) - 2025-10-20
 
 <small>[Compare with v0.3.10](https://github.com/DataShades/ckanext-saml/compare/v0.3.10...v0.4.0)</small>
@@ -75,7 +83,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - remove overrides for user edit form ([3205480](https://github.com/DataShades/ckanext-saml/commit/3205480bc001a8045825361834537954b8495791) by Sergey Motornyuk).
 
-## [v0.3.2](https://github.com/DataShades/ckanext-saml/releases/tag/v0.3.2) - 2023-09-07
+## [v0.3.2](https://github.com/DataShades/ckanext-saml/releases/tag/v0.3.2) - 2023-09-08
 
 <small>[Compare with v0.3.1](https://github.com/DataShades/ckanext-saml/compare/v0.3.1...v0.3.2)</small>
 
@@ -150,7 +158,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - standardize config option names ([108db0f](https://github.com/DataShades/ckanext-saml/commit/108db0f31e336d3b38986e5b2e26ca01553d5dc7) by Sergey Motornyuk).
 
-## [v0.1.4](https://github.com/DataShades/ckanext-saml/releases/tag/v0.1.4) - 2022-10-15
+## [v0.1.4](https://github.com/DataShades/ckanext-saml/releases/tag/v0.1.4) - 2022-10-16
 
 <small>[Compare with v0.1.3](https://github.com/DataShades/ckanext-saml/compare/v0.1.3...v0.1.4)</small>
 
