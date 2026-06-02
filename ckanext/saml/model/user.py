@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy import Boolean, Column, UnicodeText
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm import backref, declarative_base, relationship
 from sqlalchemy.sql.schema import ForeignKey
 
 import ckan.model as model

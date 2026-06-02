@@ -1,4 +1,5 @@
 import pytest
+from sqlalchemy.orm import configure_mappers
 
 import ckan.model as model
 
@@ -8,6 +9,8 @@ from ckanext.saml.model import User
 @pytest.mark.usefixtures("with_plugins", "clean_db")
 class TestUser:
     def test_relationship(self, user):
+        configure_mappers()
+
         assert model.User.get(user["id"]).saml2_user is None
 
         su = User(id=user["id"], name_id="test")
