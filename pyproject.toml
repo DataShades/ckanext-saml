@@ -30,7 +30,7 @@ text = "AGPL"
 Homepage = "https://github.com/DataShades/ckanext-saml"
 
 [project.optional-dependencies]
-adfs = [ "lxml==4.6.4",]
+adfs = [ "lxml==6.1.0",]
 
 [project.entry-points."ckan.plugins"]
 saml = "ckanext.saml.plugin:SamlPlugin"
